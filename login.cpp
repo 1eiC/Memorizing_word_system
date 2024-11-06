@@ -1,0 +1,52 @@
+//
+// Created by 陈磊 on 24-11-4.
+//
+
+#include "login.h"
+#include "user.h"
+
+// Login 类构造函数，初始化登录界面
+Login::Login(QWidget *parent) : QWidget(parent) {
+    QVBoxLayout *layout = new QVBoxLayout(this); // 创建垂直布局
+
+    // 创建用户名输入框，设置占位符
+    usernameInput = new QLineEdit(this);
+    usernameInput->setPlaceholderText("用户名");
+    layout->addWidget(usernameInput); // 将用户名输入框添加到布局中
+
+    // 创建密码输入框，设置占位符，并将显示模式设置为密码类型
+    passwordInput = new QLineEdit(this);
+    passwordInput->setPlaceholderText("密码");
+    passwordInput->setEchoMode(QLineEdit::Password);
+    layout->addWidget(passwordInput); // 将密码输入框添加到布局中
+
+    // 创建登录按钮，并将其添加到布局中
+    QPushButton *loginButton = new QPushButton("登录", this);
+    layout->addWidget(loginButton);
+    connect(loginButton, &QPushButton::clicked, this, &Login::onLogin); // 连接登录按钮的点击信号到 onLogin 槽函数
+
+    // 创建注册按钮，并将其添加到布局中
+    QPushButton *registerButton = new QPushButton("注册", this);
+    layout->addWidget(registerButton);
+    connect(registerButton, &QPushButton::clicked, this, &Login::onRegister); // 连接注册按钮的点击信号到 onRegister 槽函数
+}
+
+// 登录按钮的槽函数
+void Login::onLogin() {
+    QString username = usernameInput->text().trimmed(); // 获取并去除用户名输入框中的空格
+    QString password = passwordInput->text().trimmed(); // 获取并去除密码输入框中的空格
+
+    // 使用 User 类的 authenticate 方法验证用户名和密码
+    if (User::authenticate(username, password)) {
+        QMessageBox::information(this, "登录成功", "欢迎，" + username + "！"); // 弹出登录成功信息框
+        emit loginSuccessful(); // 发送登录成功信号
+        emit usernameSent(username);
+    } else {
+        QMessageBox::warning(this, "登录失败", "用户名或密码错误！"); // 弹出登录失败警告框
+    }
+}
+
+// 注册按钮的槽函数
+void Login::onRegister() {
+    emit switchToRegister(); // 发送切换到注册页面的信号
+}

@@ -1,0 +1,12 @@
+Statistics
+-------------------
+Word: attitude
+Number_of_occurrences: 1
+Number_of_errors: 0
+Correctness: 100%
+-------------------
+Word: construct
+Number_of_occurrences: 2
+Number_of_errors: 1
+Correctness: 50%
+-------------------

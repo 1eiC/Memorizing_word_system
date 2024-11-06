@@ -1,0 +1,714 @@
+//
+// Created by 陈磊 on 24-11-4.
+//
+
+#include "mainwindow.h"
+#include <QVBoxLayout>
+#include <QMessageBox>
+#include <QRandomGenerator>
+
+#include "statistics.h"
+
+MainWindow::MainWindow(QWidget *parent) // 构造函数
+    : QMainWindow(parent), currentIndex(0) {    // 初始化成员变量
+    loginPage = new Login(this); // 登录页面
+    registerPage = new Register(this); // 注册页面
+
+    setCentralWidget(loginPage); // 初始显示登录页面
+
+    connect(loginPage, &Login::loginSuccessful, this, &MainWindow::onLoginSuccessful); // 登录成功后，触发该信号
+    connect(loginPage, &Login::switchToRegister, this, &MainWindow::onSwitchToRegister); // 点击注册后，触发该信号
+    connect(registerPage, &Register::registerSuccessful, this, &MainWindow::onRegisterSuccessful); // 注册成功后，触发该信号
+    connect(loginPage, &Login::usernameSent, this, &MainWindow::onUsernameReceived); // 登录成功后，触发该信号
+}
+
+MainWindow::~MainWindow() {
+}
+
+void MainWindow::onLoginSuccessful() {
+    showMainMenu(); // 登录成功后，显示单词本管理菜单
+}
+
+void MainWindow::onSwitchToRegister() {
+    setCentralWidget(registerPage); // 切换到注册页面
+}
+
+void MainWindow::onRegisterSuccessful() {
+    showMainMenu(); // 登录成功后，显示单词本管理菜单
+}
+
+void MainWindow::MainMenu() {
+    showMainMenu(); //显示单词本管理菜单
+}
+
+void MainWindow::onUsernameReceived(const QString &username)
+{
+    this->username = username; // 更新MainWindow中的username变量
+    // 可以在这里根据需要调用使用username的函数，比如初始化或加载数据
+    loadCheckinData();
+}
+
+void MainWindow::showMainMenu() {
+    // 主菜单页面布局
+    QWidget *mainMenu = new QWidget(this);
+    QVBoxLayout *menuLayout = new QVBoxLayout(mainMenu);
+    QPushButton *preview = new QPushButton("预览", this);
+    QPushButton *learnButton1 = new QPushButton("拼写背诵", this);
+    QPushButton *learnButton2 = new QPushButton("选择题背诵", this);
+    QPushButton *reviewButton = new QPushButton("复习错题", this);
+    QPushButton *statisticsButton = new QPushButton("统计分析", this);
+    QPushButton *cardButton = new QPushButton("打卡", this);
+    QPushButton *importButton = new QPushButton("导入单词表",this);
+    QPushButton *logoutButton = new QPushButton("退出", this);
+    // 添加按钮
+    menuLayout->addWidget(preview);
+    menuLayout->addWidget(learnButton1);
+    menuLayout->addWidget(learnButton2);
+    menuLayout->addWidget(reviewButton);
+    menuLayout->addWidget(statisticsButton);
+    menuLayout->addWidget(cardButton);
+    menuLayout->addWidget(importButton);
+    menuLayout->addWidget(logoutButton);
+
+    mainMenu->setLayout(menuLayout);
+    setCentralWidget(mainMenu); // 显示主菜单
+
+    connect(preview, &QPushButton::clicked, this, &MainWindow::previewVocabulary);
+    connect(learnButton1, &QPushButton::clicked, this, &MainWindow::startLearning1);
+    connect(learnButton2, &QPushButton::clicked, this, &MainWindow::startLearning2);
+    connect(reviewButton, &QPushButton::clicked, this, &MainWindow::startReview);
+    connect(statisticsButton, &QPushButton::clicked, this, &MainWindow::performStatistics);
+    connect(importButton, &QPushButton::clicked, this, &MainWindow::import);
+    connect(cardButton, &QPushButton::clicked, this, &MainWindow::onCardButtonClicked);
+    connect(logoutButton, &QPushButton::clicked, this, [this]() {
+        QApplication::quit(); // 退出程序
+    });
+}
+
+void MainWindow::startLearning1() {
+    showLearningPage1(); // 切换到拼写背诵
+}
+
+void MainWindow::startLearning2() {
+    showLearningPage2(); // 切换到选择题背诵
+}
+
+void MainWindow::startReview() {
+    showReviewPage(); // 切换到复习错题页面
+}
+
+void MainWindow::performStatistics() {
+    showStatisticsPage(); // 切换到统计页面
+}
+
+void MainWindow::import() {
+    ImportPage(); //切换到导入单词表页面
+}
+
+void MainWindow::onCardButtonClicked() {
+    showCardPage();
+}
+
+
+void MainWindow::previewVocabulary() {
+
+    vocabularyPage = new QWidget(this);
+    QVBoxLayout *vocabularyLayout = new QVBoxLayout(vocabularyPage);
+    vocabularyTable = new QTableWidget(this);
+    vocabularyTable->setColumnCount(3);
+    QStringList headers;
+    headers << "单词" << "词性" << "释义";
+    vocabularyTable->setHorizontalHeaderLabels(headers);
+
+    const QVector<Word> &words = vocabulary.getWords();
+    vocabularyTable->setRowCount(words.size());
+
+    for (int i = 0; i < words.size(); ++i) {
+        vocabularyTable->setItem(i, 0, new QTableWidgetItem(words[i].getEnglish()));
+        vocabularyTable->setItem(i, 1, new QTableWidgetItem(words[i].getPartOfSpeech()));
+        vocabularyTable->setItem(i, 2, new QTableWidgetItem(words[i].getMeanings().join("; ")));
+    }
+
+    QPushButton *addButton = new QPushButton("添加单词", this);
+    QPushButton *modifyButton = new QPushButton("修改单词", this);
+    QPushButton *deleteButton = new QPushButton("删除单词", this);
+    QPushButton *backButton = new QPushButton("返回主菜单", this);
+
+    vocabularyLayout->addWidget(vocabularyTable);
+    vocabularyLayout->addWidget(addButton);
+    vocabularyLayout->addWidget(modifyButton);
+    vocabularyLayout->addWidget(deleteButton);
+    vocabularyLayout->addWidget(backButton);
+
+    vocabularyPage->setLayout(vocabularyLayout);
+    setCentralWidget(vocabularyPage);
+
+    connect(addButton, &QPushButton::clicked, this, &MainWindow::addWord);
+    connect(modifyButton, &QPushButton::clicked, this, &MainWindow::modifyWord);
+    connect(deleteButton, &QPushButton::clicked, this, &MainWindow::deleteWord);
+    connect(backButton, &QPushButton::clicked, this, &MainWindow::showMainMenu);
+}
+
+void MainWindow::addWord() {
+    // 添加单词逻辑
+    QString english = QInputDialog::getText(this, "添加单词", "请输入单词：");
+    if (english.isEmpty()) {
+        return; // 用户取消输入
+    }
+
+    QString partOfSpeech = QInputDialog::getText(this, "添加词性", "请输入词性：");
+    if (partOfSpeech.isEmpty()) {
+        return; // 用户取消输入
+    }
+
+    QString meaningsStr = QInputDialog::getText(this, "添加释义", "请输入释义（多个释义用逗号分隔）：");
+    if (meaningsStr.isEmpty()) {
+        return; // 用户取消输入
+    }
+    QStringList meanings = meaningsStr.split(",", Qt::SkipEmptyParts); // 获取释义列表
+
+    vocabulary.addWord(Word(english, partOfSpeech, meanings));
+    updateVocabularyFile();
+    previewVocabulary(); // 更新预览
+}
+
+void MainWindow::modifyWord() {
+    // 修改单词逻辑
+    int currentRow = vocabularyTable->currentRow(); // 获取当前选中的行
+    if (currentRow >= 0) {
+        QString english = vocabularyTable->item(currentRow, 0)->text(); // 获取当前行的英文单词
+        QString newPartOfSpeech = QInputDialog::getText(this, "修改词性", "请输入新的词性：");
+        if (newPartOfSpeech.isEmpty()) {
+            return;
+        }
+
+        QString newMeaningsStr = QInputDialog::getText(this, "修改释义", "请输入新的释义（多个释义用逗号分隔）：");
+        if (newMeaningsStr.isEmpty()) {
+            return;
+        }
+        QStringList newMeanings = newMeaningsStr.split(",", Qt::SkipEmptyParts); // 获取释义列表
+
+        Word newWord(english, newPartOfSpeech, newMeanings); // 创建新的 Word 对象
+        vocabulary.modifyWord(english, newWord); // 修改单词
+        updateVocabularyFile(); // 保存到文件
+        previewVocabulary(); // 更新预览
+    }
+}
+
+void MainWindow::deleteWord() {
+    // 删除单词逻辑
+    int currentRow = vocabularyTable->currentRow(); // 获取当前选中的行
+    if (currentRow >= 0) {
+        QString english = vocabularyTable->item(currentRow, 0)->text(); // 获取当前行的英文单词
+        vocabulary.removeWord(english); // 删除单词
+        updateVocabularyFile(); // 保存到文件
+        previewVocabulary(); // 更新预览
+    }
+}
+
+
+void MainWindow::supplementMeaning() {
+    // 补充单词释义的逻辑
+    int currentRow = vocabularyTable->currentRow(); // 获取当前选中的行
+    if (currentRow >= 0) {
+        QString english = vocabularyTable->item(currentRow, 0)->text(); // 获取当前行的英文单词
+        QString newMeaning = QInputDialog::getText(this, "补充释义", "请输入新的释义：");
+        if (!newMeaning.isEmpty()) {
+            vocabulary.addMeaningToWord(english, newMeaning); // 添加释义
+            updateVocabularyFile(); // 保存到
+            previewVocabulary(); // 更新预览
+        }
+    } else {
+        QMessageBox::warning(this, "未选择单词", "请先选择一个单词以补充释义。"); // 提示用户未选择单词
+    }
+}
+
+
+void MainWindow::updateVocabularyFile() {
+    vocabulary.saveToFile("wordlist.txt"); // 保存到文件
+}
+
+
+void MainWindow::showLearningPage1() {
+    learningPage1 = new QWidget(this);
+    QVBoxLayout *learningLayout = new QVBoxLayout(learningPage1);
+
+    wordLabel = new QLabel(this);
+    inputField = new QLineEdit(this);
+    submitButton = new QPushButton("提交", this);
+
+    learningLayout->addWidget(wordLabel);
+    learningLayout->addWidget(inputField);
+    learningLayout->addWidget(submitButton);
+
+    learningPage1->setLayout(learningLayout);
+    setCentralWidget(learningPage1);
+
+    currentIndex = 0; // 初始化学习索引
+    size_t maxQuestions = 10; // 设置题目上限为10个
+
+    // 获取词汇表并随机打乱
+    QVector<Word> allWords = vocabulary.getWords(); // 假设这个方法返回 QVector<Word>
+    std::shuffle(allWords.begin(), allWords.end(), std::mt19937(std::random_device()())); // 打乱顺序
+
+    // 只选择前 maxQuestions 个单词进行学习
+    selectedWords = allWords.mid(0, std::min(static_cast<size_t>(allWords.size()), maxQuestions));
+
+    if (!selectedWords.isEmpty()) {
+        updateWordLabel(selectedWords); // 更新单词标签
+    }
+
+    // 连接信号和槽
+    connect(submitButton, &QPushButton::clicked, this, [this]() {
+        QString userInput = inputField->text().trimmed();
+        const Word& currentWord = selectedWords[currentIndex];
+
+        // 增加单词出现次数
+        wordStats[currentWord.getEnglish()].first++;
+
+        // 根据显示的语言来检查用户的输入
+        bool showEnglish = wordLabel->text().startsWith(currentWord.getEnglish());
+        QStringList correctAnswers;
+
+        if (showEnglish) {
+            // 用户看到的是英文，检查输入的中文释义
+            correctAnswers = currentWord.getMeanings();
+            if (correctAnswers.contains(userInput)) {
+                QMessageBox::information(this, "正确", "回答正确！", QMessageBox::Ok);
+                currentIndex++;
+                if (currentIndex < selectedWords.size()) { // 限制题目数量
+                    updateWordLabel(selectedWords); // 更新单词标签
+                    inputField->clear();
+                } else {
+                    QMessageBox::information(this, "完成", "已完成所有单词学习！", QMessageBox::Ok);
+                    showMainMenu();
+                }
+            } else {
+                QMessageBox::warning(this, "错误", "回答错误，请再试一次。", QMessageBox::Ok);
+                // 增加错误次数
+                wordStats[currentWord.getEnglish()].second++;
+                wrongWords.append(currentWord); // 将错误的单词加入错题本
+                inputField->clear();
+            }
+        } else {
+            // 用户看到的是中文，检查输入的英文单词
+            if (userInput == currentWord.getEnglish()) {
+                QMessageBox::information(this, "正确", "回答正确！", QMessageBox::Ok);
+                currentIndex++;
+                if (currentIndex < selectedWords.size()) { // 限制题目数量
+                    updateWordLabel(selectedWords); // 更新单词标签
+                    inputField->clear();
+                } else {
+                    QMessageBox::information(this, "完成", "已完成所有单词学习！", QMessageBox::Ok);
+                    showMainMenu();
+                }
+            } else {
+                QMessageBox::warning(this, "错误", "回答错误，请再试一次。", QMessageBox::Ok);
+                // 增加错误次数
+                wordStats[currentWord.getEnglish()].second++;
+                wrongWords.append(currentWord); // 将错误的单词加入错题本
+                inputField->clear();
+            }
+        }
+    });
+}
+// 更新单词标签的方法
+void MainWindow::updateWordLabel(const QVector<Word>& words) {
+    // 随机选择显示中文或英文
+    bool showEnglish = QRandomGenerator::global()->bounded(2) == 0; // 50% 概率
+    const Word& currentWord = words[currentIndex];
+
+    if (showEnglish) {
+        wordLabel->setText(currentWord.getEnglish() + " (" + currentWord.getPartOfSpeech() + ")");
+    } else {
+        wordLabel->setText(currentWord.getMeanings().join(", ") + " (" + currentWord.getPartOfSpeech() + ")");
+    }
+}
+
+void MainWindow::showLearningPage2() {
+    learningPage2 = new QWidget(this);
+    QVBoxLayout *learningLayout = new QVBoxLayout(learningPage2);
+
+    wordLabel = new QLabel(this);
+    submitButton = new QPushButton("提交", this);
+
+    // 生成四个选项按钮
+    optionsGroup = new QButtonGroup(this);
+    QRadioButton *optionA = new QRadioButton(this);
+    QRadioButton *optionB = new QRadioButton(this);
+    QRadioButton *optionC = new QRadioButton(this);
+    QRadioButton *optionD = new QRadioButton(this);
+    optionsGroup->addButton(optionA, 0);
+    optionsGroup->addButton(optionB, 1);
+    optionsGroup->addButton(optionC, 2);
+    optionsGroup->addButton(optionD, 3);
+
+    // 添加控件到布局
+    learningLayout->addWidget(wordLabel);
+    learningLayout->addWidget(optionA);
+    learningLayout->addWidget(optionB);
+    learningLayout->addWidget(optionC);
+    learningLayout->addWidget(optionD);
+    learningLayout->addWidget(submitButton);
+
+    learningPage2->setLayout(learningLayout);
+    setCentralWidget(learningPage2);
+
+    // 初始化
+    currentIndex = 0;  // 当前题目索引
+    usedIndexes.clear(); // 清空已出题的索引集合
+
+    // 获取词汇表并随机打乱
+    QVector<Word> allWords = vocabulary.getWords();
+    std::shuffle(allWords.begin(), allWords.end(), std::mt19937(std::random_device()()));
+
+    // 从打乱后的词汇表中选择前10个单词作为题目
+    selectedWords.clear();
+    size_t maxQuestions = 10; // 假设题目上限为10
+
+    // 手动计算最小值，确保索引不超过可用词汇数
+    size_t numQuestions = (allWords.size() < static_cast<size_t>(maxQuestions)) ? allWords.size() : static_cast<size_t>(maxQuestions);
+
+    for (size_t i = 0; i < numQuestions; ++i) {
+        selectedWords.append(allWords[i]);
+    }
+
+    // 如果有题目，更新界面显示
+    if (!selectedWords.isEmpty()) {
+        updateMultipleChoiceQuestion(); // 初始化第一道选择题
+    }
+
+    // 连接信号和槽
+    connect(submitButton, &QPushButton::clicked, this, [this]() {
+        checkMultipleChoiceAnswer(optionsGroup); // 检查答案
+    });
+}
+
+// 更新选择题问题的方法
+void MainWindow::updateMultipleChoiceQuestion() {
+    if (currentIndex >= selectedWords.size()) {
+        QMessageBox::information(this, "完成", "已达到题目上限！", QMessageBox::Ok);
+        showMainMenu();
+        return;
+    }
+
+    const Word &currentWord = selectedWords[currentIndex];
+    bool showEnglish = QRandomGenerator::global()->bounded(2) == 0;
+
+    // 设置题干
+    if (showEnglish) {
+        wordLabel->setText(currentWord.getEnglish() + " (" + currentWord.getPartOfSpeech() + ")");
+    } else {
+        wordLabel->setText(currentWord.getMeanings().join(", ") + " (" + currentWord.getPartOfSpeech() + ")");
+    }
+
+    // 随机生成选项
+    QList<QString> options;
+    if (showEnglish) {
+        options = generateOptions(currentWord.getMeanings().first(), true);  // 生成中文释义的选项
+    } else {
+        options = generateOptions(currentWord.getEnglish(), false);  // 生成英文翻译的选项
+    }
+
+    // 分配选项到按钮
+    QRadioButton *optionA = qobject_cast<QRadioButton *>(optionsGroup->button(0));
+    QRadioButton *optionB = qobject_cast<QRadioButton *>(optionsGroup->button(1));
+    QRadioButton *optionC = qobject_cast<QRadioButton *>(optionsGroup->button(2));
+    QRadioButton *optionD = qobject_cast<QRadioButton *>(optionsGroup->button(3));
+
+    // 设置选项文本
+    optionA->setText(options[0]);
+    optionB->setText(options[1]);
+    optionC->setText(options[2]);
+    optionD->setText(options[3]);
+
+    qDebug() << "生成的选项：" << options;
+    qDebug() << "正确答案：" << options[0]; // 假设正确答案是第一个选项
+}
+
+// 生成干扰选项的方法
+QList<QString> MainWindow::generateOptions(const QString &correctAnswer, bool isMeaning) {
+    QList<QString> options = {correctAnswer};  // 添加正确答案
+    int wordsCount = vocabulary.getWords().size();
+
+    while (options.size() < 4) {
+        int randIndex = QRandomGenerator::global()->bounded(wordsCount);
+        const Word &randomWord = vocabulary.getWords()[randIndex];
+        QString option = isMeaning ? randomWord.getMeanings().first() : randomWord.getEnglish();
+
+        if (!options.contains(option)) {
+            options.append(option);
+        }
+    }
+
+    // 打乱选项顺序
+    std::shuffle(options.begin(), options.end(), std::default_random_engine(QRandomGenerator::global()->generate()));
+    return options;
+}
+
+// 检查用户选择的答案
+void MainWindow::checkMultipleChoiceAnswer(QButtonGroup *optionsGroup) {
+    QAbstractButton *selectedButton = optionsGroup->checkedButton();
+    if (!selectedButton) {
+        QMessageBox::warning(this, "错误", "请选择一个答案！", QMessageBox::Ok);
+        return;
+    }
+
+    const Word &currentWord = selectedWords[currentIndex];
+    QString correctAnswer = wordLabel->text().startsWith(currentWord.getEnglish())
+                                ? currentWord.getMeanings().first()
+                                : currentWord.getEnglish();
+
+    qDebug() << "用户选择的答案：" << selectedButton->text();
+    qDebug() << "正确答案：" << correctAnswer;
+
+    // 增加单词出现次数
+    wordStats[currentWord.getEnglish()].first++;
+    learnedWords.append(currentWord);  // 将该单词加入已学习的集合
+
+    // 比较答案
+    if (selectedButton->text().trimmed() == correctAnswer.trimmed()) {
+        QMessageBox::information(this, "正确", "回答正确！", QMessageBox::Ok);
+        currentIndex++;
+        if (currentIndex < selectedWords.size()) {
+            updateMultipleChoiceQuestion();
+        } else {
+            QMessageBox::information(this, "完成", "已完成所有单词学习或达到题目上限！", QMessageBox::Ok);
+            showMainMenu();
+        }
+    } else {
+        QMessageBox::warning(this, "错误", "回答错误，请再试一次。", QMessageBox::Ok);
+        // 增加错误次数
+        wordStats[currentWord.getEnglish()].second++;
+        qDebug() << "当前错题数量:" << wrongWords.size();  // 调试输出
+        wrongWords.append(currentWord); // 将错误的单词加入错题本
+    }
+}
+
+void MainWindow::showReviewPage() {
+    review = new Review(wrongWords,this);
+    reviewPage = new QWidget(this); // 创建复习页面
+    QVBoxLayout *reviewLayout = new QVBoxLayout(reviewPage); // 创建布局
+
+    QLabel *reviewLabel = new QLabel("错题复习", this); // 创建标题标签
+    reviewLayout->addWidget(reviewLabel); // 添加标题标签
+
+    if (wrongWords.isEmpty()) { // 如果没有错题
+        reviewLabel->setText("没有错题，继续保持！");// 设置提示
+    }
+    else {
+        for (const Word &word : wrongWords) {
+            QString meaningsString = word.getMeanings().join(", ");
+            QLabel *wordItem = new QLabel(word.getEnglish() + " (" + word.getPartOfSpeech() + ") - " + meaningsString, this);
+            reviewLayout->addWidget(wordItem);
+        }
+    }
+    QPushButton *exportButton = new QPushButton("导出错题", this);
+    QPushButton *redoButton = new QPushButton("重新做错题", this);
+    QPushButton *backButton = new QPushButton("返回主菜单", this); // 返回按钮
+    reviewLayout->addWidget(exportButton); // 添加导出按钮
+    reviewLayout->addWidget(redoButton); // 添加重新做错题按钮
+    reviewLayout->addWidget(backButton); // 添加返回按钮
+
+    reviewPage->setLayout(reviewLayout); // 设置布局
+    setCentralWidget(reviewPage); // 显示页面
+
+    connect(backButton, &QPushButton::clicked, this, &MainWindow::showMainMenu); // 返回主菜单
+    connect(exportButton, &QPushButton::clicked, this, &MainWindow::onExportWrongWords);
+    connect(redoButton, &QPushButton::clicked, this, &MainWindow::onRedoWrongWords);
+}
+
+void MainWindow::onExportWrongWords() {
+    review -> onExportButtonClicked(); // 导出错题
+}
+
+void MainWindow::onRedoWrongWords() {
+    review -> onRedoButtonClicked(); // 重新做错题
+}
+
+void MainWindow::showStatisticsPage() {
+    statisticsPage = new Statistics(vocabulary, wrongWords, learnedWords, wordStats, this);
+    connect(dynamic_cast<const QtPrivate::FunctionPointer<void(Statistics::*)()>::Object *>(statisticsPage), &Statistics::backToMainMenu, this, &MainWindow::MainMenu);
+    // 设置中央窗口小部件为统计页面
+    setCentralWidget(statisticsPage);
+
+}
+
+void MainWindow::ImportPage() {
+    // 创建导入单词表页面
+    QWidget *importPage = new QWidget(this);
+    QVBoxLayout *importLayout = new QVBoxLayout(importPage);
+
+    QPushButton *selectFileButton = new QPushButton("选择单词表文件", this);
+    QLabel *fileContentLabel = new QLabel("请选择一个文件来导入单词表。", this);
+    QPushButton *backButton = new QPushButton("返回主菜单", this);
+
+    importLayout->addWidget(selectFileButton);
+    importLayout->addWidget(fileContentLabel);
+    importLayout->addWidget(backButton);
+
+    importPage->setLayout(importLayout);
+    setCentralWidget(importPage); // 设置导入页面为当前中心窗口
+
+    connect(selectFileButton, &QPushButton::clicked, this, [this, fileContentLabel]() {
+        QString fileName = QFileDialog::getOpenFileName(this, "选择单词表文件", "", "文本文件 (*.txt)");
+        if (!fileName.isEmpty()) {
+            QFile file(fileName);
+            if (file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+                QTextStream in(&file);
+                in.setCodec("UTF-8"); // 确保使用 UTF-8 编码读取文件
+                QString content;
+                while (!in.atEnd()) {
+                    QString line = in.readLine();
+                    QStringList parts = line.split(",");
+                    if (parts.size() >= 3) {
+                        QString english = parts[0].trimmed();
+                        QString partOfSpeech = parts[1].trimmed();
+                        QStringList meanings;
+                        for (int i = 2; i < parts.size(); ++i) {
+                            meanings.append(parts[i].trimmed());
+                        }
+                        vocabulary.addWord(Word(english, partOfSpeech, meanings));
+                        content += line + "\n";
+                    } else {
+                        content += "无效的单词格式: " + line + "\n";
+                    }
+                }
+                fileContentLabel->setText(content);
+                file.close();
+            } else {
+                QMessageBox::warning(this, "文件错误", "无法打开所选文件！");
+            }
+        }
+    });
+
+    connect(backButton, &QPushButton::clicked, this, &MainWindow::showMainMenu); // 返回主菜单
+}
+
+void MainWindow::showCardPage() {
+    try {
+        if (CardPage == nullptr) {
+            CardPage = new QWidget(this);
+            QVBoxLayout *cardLayout = new QVBoxLayout(CardPage);
+            infoLabel = new QLabel(this);
+            QPushButton *checkInButton = new QPushButton("打卡", this);
+            QPushButton *returnToMenuButton = new QPushButton("返回主菜单", this); // 返回主菜单按钮
+
+            // 将控件添加到布局中
+            cardLayout->addWidget(infoLabel);
+            cardLayout->addWidget(checkInButton);
+            cardLayout->addWidget(returnToMenuButton); // 添加返回主菜单按钮
+
+            // 设置 CardPage 的布局
+            CardPage->setLayout(cardLayout);
+
+            // 连接按钮的点击信号到槽函数
+            connect(checkInButton, &QPushButton::clicked, this, &MainWindow::onCheckInButtonClicked);
+            connect(returnToMenuButton, &QPushButton::clicked, this, &MainWindow::onReturnToMainMenuClicked);
+        }
+
+        // 加载打卡数据到recentCheckins列表
+        loadCheckinData();
+        // 更新显示的打卡信息
+        updateCheckinDisplay();
+
+        // 将 CardPage 设置为主窗口的中央部件
+        setCentralWidget(CardPage);
+    } catch (const std::bad_alloc& e) {
+        QMessageBox::critical(this, "内存分配错误", "无法分配足够的内存来创建界面！");
+    }
+}
+
+void MainWindow::onCheckInButtonClicked() {
+    QDate currentDate = QDate::currentDate();
+
+    // 判断是否已打卡
+    if (lastCheckInDate == currentDate) {
+        QMessageBox::information(this, "提示", "今天已经打过卡了！");
+        return;
+    }
+
+    // 更新打卡数据
+    lastCheckInDate = currentDate;
+    checkinCount++;
+    saveCheckinData(currentDate);
+    updateCheckinDisplay();
+
+    QMessageBox::information(this, "打卡成功", "打卡成功！");
+}
+
+void MainWindow::onReturnToMainMenuClicked() {
+    // 处理返回主菜单的逻辑
+    showMainMenu();
+}
+
+void MainWindow::loadCheckinData() {// 加载打卡数据
+    QString filePath = getUserFilePath();// 获取用户文件路径
+
+    QFile file(filePath);// 创建文件对象
+    if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+        return;
+    }
+
+    QTextStream in(&file);// 创建文本流对象
+
+
+    bool ok;
+    checkinCount = in.readLine().toInt(&ok);
+    if (ok) {
+        lastCheckInDate = QDate::fromString(in.readLine(), Qt::ISODate);
+    }
+
+    // 清空现有记录，准备重新加载
+    recentCheckins.clear();
+
+    // 读取历史打卡记录
+    while (!in.atEnd()) {
+        QString dateString = in.readLine();// 读取日期字符串
+        if (!dateString.isEmpty()) {// 检查日期字符串是否为空
+            QDate checkinDate = QDate::fromString(dateString, Qt::ISODate);
+            if (checkinDate.isValid()) {
+                recentCheckins.append(checkinDate);
+            }
+        }
+    }
+    file.close();
+}
+void MainWindow::saveCheckinData(const QDate &date)
+{
+    QString filePath = getUserFilePath();
+
+    QFile file(filePath);
+    if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
+        QMessageBox::critical(this, "错误", "无法保存打卡数据！");
+        return;
+    }
+
+    QTextStream out(&file);
+    out << checkinCount << "\n";
+    out << lastCheckInDate.toString(Qt::ISODate) << "\n";
+    out << date.toString(Qt::ISODate) << "\n";
+
+    for (const QDate &checkin : recentCheckins) {
+        out << checkin.toString(Qt::ISODate) << "\n";
+    }
+    file.close();
+}
+
+QString MainWindow::getUserFilePath() const// 获取用户文件路径
+{
+    QString dataDir = QCoreApplication::applicationDirPath() + "/checkin_data/";
+    QDir dir(dataDir);// 创建目录对象
+    if (!dir.exists())
+        dir.mkpath(dataDir);// 创建数据目录
+    return dataDir + username + ".txt";
+}
+
+void MainWindow::updateCheckinDisplay(){
+    QString displayText = QString("当前打卡天数：%1\n上次打卡日期：%2")
+                              .arg(checkinCount)
+                              .arg(lastCheckInDate.isValid() ? lastCheckInDate.toString(Qt::ISODate) : "无");
+
+    infoLabel->setText(displayText);
+}
+//打卡

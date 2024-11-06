@@ -1,0 +1,4 @@
+D:/B23012024/Demo/Demo/cmake-build-debug/CMakeFiles/Demo.dir
+D:/B23012024/Demo/Demo/cmake-build-debug/CMakeFiles/edit_cache.dir
+D:/B23012024/Demo/Demo/cmake-build-debug/CMakeFiles/rebuild_cache.dir
+D:/B23012024/Demo/Demo/cmake-build-debug/CMakeFiles/Demo_autogen.dir
