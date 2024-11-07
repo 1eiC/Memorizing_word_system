@@ -16,6 +16,12 @@ void Review::setupUI() {
     QVBoxLayout *layout = new QVBoxLayout(this);
 
     QLabel *titleLabel = new QLabel("错题复习", this);
+    titleLabel->setStyleSheet("QLabel {"
+                         "    font-size: 30px;"        // 设置字体大小
+                         "    color: #333;"            // 设置文本颜色
+                         "    font-weight: bold;"      // 加粗文本
+                         "    margin-bottom: 15px;"    // 控件底部的间距
+                         "}");
     layout->addWidget(titleLabel);
     wrongWordsTable = new QTableWidget(this);
     layout->addWidget(wrongWordsTable);
@@ -27,6 +33,12 @@ void Review::setupUI() {
     loadWrongWords();  // 加载错题数据到表格
     if (wrongWords.isEmpty()) {
         QLabel *noMistakesLabel = new QLabel("没有错题，继续保持！", this);
+        noMistakesLabel->setStyleSheet("QLabel {"
+                         "    font-size: 30px;"        // 设置字体大小
+                         "    color: #333;"            // 设置文本颜色
+                         "    font-weight: bold;"      // 加粗文本
+                         "    margin-bottom: 15px;"    // 控件底部的间距
+                         "}");
         layout->addWidget(noMistakesLabel);
     } else {
         for (const Word &word : wrongWords) {
@@ -34,6 +46,12 @@ void Review::setupUI() {
             QString meaningsString = word.getMeanings().join(", "); // 使用逗号分隔多个释义
             QString wordInfo = word.getEnglish() + " (" + word.getPartOfSpeech() + ") - " + meaningsString; // 使用空格分隔单词和词性
             QLabel *wordLabel = new QLabel(wordInfo, this);// 创建一个标签来显示单词信息
+            wordLabel->setStyleSheet("QLabel {"
+                         "    font-size: 30px;"        // 设置字体大小
+                         "    color: #333;"            // 设置文本颜色
+                         "    font-weight: bold;"      // 加粗文本
+                         "    margin-bottom: 15px;"    // 控件底部的间距
+                         "}"); // 设置样式
             layout->addWidget(wordLabel);
         }
     }

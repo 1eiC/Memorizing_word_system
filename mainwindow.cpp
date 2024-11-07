@@ -135,19 +135,6 @@ void MainWindow::onCardButtonClicked() {
     showCardPage();
 }
 
-
-/**
- * @brief 预览词汇功能
- *
- * 本函数创建并显示词汇预览页面，包括词汇表和操作按钮。通过以下步骤实现：
- * 1. 创建词汇页面和布局
- * 2. 初始化词汇表，设置列数和表头
- * 3. 获取词汇数据并填充到词汇表中
- * 4. 创建操作按钮：添加、修改、删除单词及返回主菜单
- * 5. 将词汇表和按钮添加到布局中
- * 6. 设置中央部件为词汇页面
- * 7. 连接按钮点击信号到对应的槽函数
- */
 void MainWindow::previewVocabulary() {
     // 创建词汇页面和布局
     vocabularyPage = new QWidget(this);
@@ -279,13 +266,32 @@ void MainWindow::showLearningPage1() {
     QVBoxLayout *learningLayout = new QVBoxLayout(learningPage1);
 
     wordLabel = new QLabel(this);
+    wordLabel->setStyleSheet("QLabel {"
+                             "    font-size: 30px;"       // 字体大小
+                             "    font-weight: bold;"     // 字体加粗
+                             "    color: #333;"           // 文本颜色
+                             "}");
+
     inputField = new QLineEdit(this);
+    inputField->setPlaceholderText("请输入你的答案...");
+    inputField->setStyleSheet("QLineEdit {"
+                              "    font-size: 16px;"       // 字体大小
+                              "    color: #333;"           // 文本颜色
+                              "    padding: 8px;"          // 内边距
+                              "    border: 2px solid #4CAF50;" // 边框颜色
+                              "    border-radius: 8px;"    // 圆角边框
+                              "    background-color: #ffffff;" // 背景色
+                              "}"
+                              "QLineEdit:focus {"
+                              "    border: 2px solid #3e8e41;" // 聚焦时边框颜色
+                              "}");
     submitButton = new CustomButton("提交", this);
     CustomButton *returnToMenuButton = new CustomButton("返回主菜单", this); // 返回主菜单按钮
     learningLayout->addWidget(wordLabel);
     learningLayout->addWidget(inputField);
     learningLayout->addWidget(submitButton);
     learningLayout->addWidget(returnToMenuButton);
+    learningLayout->setSpacing(80); // 控件之间的间距
 
     learningPage1->setLayout(learningLayout);
     setCentralWidget(learningPage1);
@@ -379,6 +385,13 @@ void MainWindow::showLearningPage2() {
     QVBoxLayout *learningLayout = new QVBoxLayout(learningPage2);
 
     wordLabel = new QLabel(this);
+    wordLabel->setStyleSheet("QLabel {"
+                         "    font-size: 30px;"        // 设置字体大小
+                         "    color: #333;"            // 设置文本颜色
+                         "    font-weight: bold;"      // 加粗文本
+                         "    margin-bottom: 15px;"    // 控件底部的间距
+                         "}");
+
     submitButton = new CustomButton("提交", this);
 
     // 生成四个选项按钮
@@ -388,6 +401,31 @@ void MainWindow::showLearningPage2() {
     QRadioButton *optionC = new QRadioButton(this);
     QRadioButton *optionD = new QRadioButton(this);
     CustomButton *returnToMenuButton = new CustomButton("返回主菜单", this); // 返回主菜单按钮
+    QString radioButtonStyle = "QRadioButton {"
+                           "    font-size: 20px;"              // 设置字体大小
+                           "    color: #333;"                  // 设置文本颜色
+                           "    font-weight: bold;"            // 加粗文本
+                           "    padding: 8px;"                 // 设置控件内边距，增加视觉效果
+                           "    background-color: #f0f0f0;"    // 设置背景颜色
+                           "    border: 2px solid #d3d3d3;"    // 设置边框
+                           "    border-radius: 5px;"           // 设置圆角边框
+                           "    margin: 5px;"                  // 设置控件之间的距离
+                           "}"
+                           "QRadioButton:hover {"
+                           "    background-color: #e8e8e8;"    // 鼠标悬停时改变背景颜色
+                           "    border: 2px solid #b0b0b0;"    // 悬停时边框颜色
+                           "}"
+                           "QRadioButton:checked {"
+                           "    font-weight: bold;"            // 选中状态下加粗字体
+                           "    background-color: #d6eaf8;"    // 设置选中状态的背景颜色
+                           "}";
+
+    optionA->setStyleSheet(radioButtonStyle);
+    optionB->setStyleSheet(radioButtonStyle);
+    optionC->setStyleSheet(radioButtonStyle);
+    optionD->setStyleSheet(radioButtonStyle);
+
+
     optionsGroup->addButton(optionA, 0);
     optionsGroup->addButton(optionB, 1);
     optionsGroup->addButton(optionC, 2);
@@ -401,6 +439,8 @@ void MainWindow::showLearningPage2() {
     learningLayout->addWidget(optionD);
     learningLayout->addWidget(submitButton);
     learningLayout->addWidget(returnToMenuButton);
+    learningLayout->setSpacing(20);                // 设置控件之间的间距为 20 像素
+    learningLayout->setContentsMargins(20, 20, 20, 20); // 设置布局的内边距（左、上、右、下）
 
     learningPage2->setLayout(learningLayout);
     setCentralWidget(learningPage2);
@@ -553,6 +593,12 @@ void MainWindow::showReviewPage() {
         for (const Word &word : wrongWords) { // 遍历错题
             QString meaningsString = word.getMeanings().join(", "); // 使用逗号分隔多个释义
             QLabel *wordItem = new QLabel(word.getEnglish() + " (" + word.getPartOfSpeech() + ") - " + meaningsString, this); // 创建标签
+            wordLabel->setStyleSheet("QLabel {"
+                         "    font-size: 30px;"        // 设置字体大小
+                         "    color: #333;"            // 设置文本颜色
+                         "    font-weight: bold;"      // 加粗文本
+                         "    margin-bottom: 15px;"    // 控件底部的间距
+                         "}"); // 设置样式
             reviewLayout->addWidget(wordItem); // 添加标签
         }
     }
@@ -596,6 +642,12 @@ void MainWindow::ImportPage() {
 
     CustomButton *selectFileButton = new CustomButton("选择单词表文件", this);
     QLabel *fileContentLabel = new QLabel("请选择一个文件来导入单词表。", this);
+    fileContentLabel->setStyleSheet("QLabel {"
+                         "    font-size: 30px;"        // 设置字体大小
+                         "    color: #333;"            // 设置文本颜色
+                         "    font-weight: bold;"      // 加粗文本
+                         "    margin-bottom: 15px;"    // 控件底部的间距
+                         "}"); // 设置样式
     CustomButton *backButton = new CustomButton("返回主菜单", this);
 
     importLayout->addWidget(selectFileButton);

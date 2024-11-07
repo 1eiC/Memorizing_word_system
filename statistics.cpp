@@ -19,6 +19,12 @@ void Statistics::setupUI() {
 
     // 创建并添加标题标签
     QLabel *titleLabel = new QLabel("统计分析", this);
+    titleLabel->setStyleSheet("QLabel {"
+                         "    font-size: 30px;"        // 设置字体大小
+                         "    color: #333;"            // 设置文本颜色
+                         "    font-weight: bold;"      // 加粗文本
+                         "    margin-bottom: 15px;"    // 控件底部的间距
+                         "}");
     layout->addWidget(titleLabel);
 
     // 计算单词总数、已学习单词数和错误单词数
@@ -33,6 +39,12 @@ void Statistics::setupUI() {
                                     .arg(learnedWordsCount)
                                     .arg(wrongWordsCount)
                                     .arg(score), this);
+    statsLabel->setStyleSheet("QLabel {"
+                         "    font-size: 30px;"        // 设置字体大小
+                         "    color: #333;"            // 设置文本颜色
+                         "    font-weight: bold;"      // 加粗文本
+                         "    margin-bottom: 15px;"    // 控件底部的间距
+                         "}");
     layout->addWidget(statsLabel);
 
     // 创建导出按钮和返回按钮
