@@ -76,3 +76,9 @@
 9	62	7526701924027112	D:/B23012024/Demo/Demo/cmake-build-debug/Demo_autogen/mocs_compilation.cpp	7fedcac117ac505
 62	1904	7526701924561455	CMakeFiles/Demo.dir/mainwindow.cpp.obj	f7527f7d5bd980b8
 1905	2556	7526701942993352	Demo.exe	eecca4c577b4d32e
+8	56	7526703755785578	CMakeFiles/Demo_autogen	7fedcac117ac505
+8	56	7526703755785578	Demo_autogen/mocs_compilation.cpp	7fedcac117ac505
+8	56	7526703755785578	D:/B23012024/Demo/Demo/cmake-build-debug/CMakeFiles/Demo_autogen	7fedcac117ac505
+8	56	7526703755785578	D:/B23012024/Demo/Demo/cmake-build-debug/Demo_autogen/mocs_compilation.cpp	7fedcac117ac505
+57	1816	7526703756271341	CMakeFiles/Demo.dir/mainwindow.cpp.obj	f7527f7d5bd980b8
+1816	2463	7526703773868701	Demo.exe	eecca4c577b4d32e
