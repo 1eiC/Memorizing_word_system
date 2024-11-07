@@ -75,8 +75,10 @@ void MainWindow::showMainMenu() {
     menuLayout->addWidget(cardButton);
     menuLayout->addWidget(importButton);
     menuLayout->addWidget(logoutButton);
-
+    menuLayout->setSpacing(70);  // 控件之间的间距
+    menuLayout->setContentsMargins(200, 160, 200, 160);  // 界面四周的边距
     mainMenu->setLayout(menuLayout);
+    addBackgroundImage(); // 添加背景图片
     setCentralWidget(mainMenu); // 显示主菜单
 
     connect(preview, &QPushButton::clicked, this, &MainWindow::previewVocabulary);
@@ -90,6 +92,23 @@ void MainWindow::showMainMenu() {
         QApplication::quit(); // 退出程序
     });
 }
+
+void MainWindow::addBackgroundImage() {
+    QPalette palette = this->palette();
+    QPixmap pixmap("./OIP.png");
+
+    // 确保图片被拉伸到整个窗口大小
+    pixmap = pixmap.scaled(this->size(), Qt::KeepAspectRatioByExpanding, Qt::SmoothTransformation);
+
+    palette.setBrush(QPalette::Window, QBrush(pixmap));
+    this->setPalette(palette);
+}
+
+void MainWindow::resizeEvent(QResizeEvent *event) {
+    addBackgroundImage();
+    QMainWindow::resizeEvent(event);
+}
+
 
 void MainWindow::startLearning1() {
     showLearningPage1(); // 切换到拼写背诵
@@ -321,6 +340,7 @@ void MainWindow::showLearningPage1() {
             // 用户看到的是中文，检查输入的英文单词
             if (userInput == currentWord.getEnglish()) {
                 QMessageBox::information(this, "正确", "回答正确！", QMessageBox::Ok);
+                totalScore += 10;  // 答对加10分
                 currentIndex++;
                 if (currentIndex < selectedWords.size()) { // 限制题目数量
                     updateWordLabel(selectedWords); // 更新单词标签
@@ -333,6 +353,7 @@ void MainWindow::showLearningPage1() {
                 QMessageBox::warning(this, "错误", "回答错误，请再试一次。", QMessageBox::Ok);
                 // 增加错误次数
                 wordStats[currentWord.getEnglish()].second++;
+                totalScore -= 10;  // 答错扣10分
                 wrongWords.append(currentWord); // 将错误的单词加入错题本
                 inputField->clear();
             }
@@ -499,6 +520,7 @@ void MainWindow::checkMultipleChoiceAnswer(QButtonGroup *optionsGroup) {
     // 比较答案
     if (selectedButton->text().trimmed() == correctAnswer.trimmed()) {
         QMessageBox::information(this, "正确", "回答正确！", QMessageBox::Ok);
+        totalScore += 10;  // 答对加10分
         currentIndex++;
         if (currentIndex < selectedWords.size()) {
             updateMultipleChoiceQuestion();
@@ -510,6 +532,7 @@ void MainWindow::checkMultipleChoiceAnswer(QButtonGroup *optionsGroup) {
         QMessageBox::warning(this, "错误", "回答错误，请再试一次。", QMessageBox::Ok);
         // 增加错误次数
         wordStats[currentWord.getEnglish()].second++;
+        totalScore -= 10;  // 答错扣10分
         qDebug() << "当前错题数量:" << wrongWords.size();  // 调试输出
         wrongWords.append(currentWord); // 将错误的单词加入错题本
     }
@@ -558,7 +581,7 @@ void MainWindow::onRedoWrongWords() {
 }
 
 void MainWindow::showStatisticsPage() {
-    statisticsPage = new Statistics(vocabulary, wrongWords, learnedWords, wordStats, this);
+    statisticsPage = new Statistics(vocabulary, wrongWords, learnedWords, wordStats, totalScore, this);
     connect(dynamic_cast<const QtPrivate::FunctionPointer<void(Statistics::*)()>::Object *>(statisticsPage), &Statistics::backToMainMenu, this, &MainWindow::MainMenu);
     // 设置中央窗口小部件为统计页面
     setCentralWidget(statisticsPage);

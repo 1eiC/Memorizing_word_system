@@ -22,11 +22,8 @@ class Statistics : public QWidget {
     Q_OBJECT
 
 public:
-    explicit Statistics(const Vocabulary &vocabulary,
-                       const QList<Word> &wrongWords,
-                       const QList<Word> &learnedWords,
-                       const QMap<QString, QPair<int, int>> &wordStats,
-                       QWidget *parent = nullptr);
+    explicit Statistics(const Vocabulary &vocabulary, const QList<Word> &wrongWords, const QList<Word> &learnedWords,
+                        const QMap<QString, QPair<int, int>> &wordStats, int score, QWidget *parent = nullptr);
 
     signals:
         void backToMainMenu(); // 返回主菜单信号
@@ -49,6 +46,7 @@ private:
     QPushButton *backButton; // 返回按钮
     QMap<QString, QPair<int, int>> wordStats; // 记录每个单词的出现次数和错误次数
     QMap<QString, QPair<int, int>> wordStat; // 记录每个单词的出现次数和错误次数
+    int score;  // 用于记录成绩
 
 };
 

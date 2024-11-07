@@ -5,9 +5,10 @@
 #include "statistics.h"
 #include <QMessageBox>
 
-Statistics::Statistics(const Vocabulary &vocabulary, const QList<Word> &wrongWords, const QList<Word> &learnedWords, const QMap<QString, QPair<int, int>> &wordStats, QWidget *parent)
-    : QWidget(parent), vocabulary(vocabulary), wrongWords(wrongWords), learnedWords(learnedWords), wordStats(wordStats) {
-    QMap<QString, QPair<int, int> > wordStatS = wordStats;
+Statistics::Statistics(const Vocabulary &vocabulary, const QList<Word> &wrongWords, const QList<Word> &learnedWords,
+                       const QMap<QString, QPair<int, int>> &wordStats, int score, QWidget *parent)
+    : QWidget(parent), vocabulary(vocabulary), wrongWords(wrongWords), learnedWords(learnedWords),
+      wordStats(wordStats), score(score) {
     setupUI();
 }
 
@@ -27,7 +28,11 @@ void Statistics::setupUI() {
     int wrongWordsCount = wrongWords.size();
 
     // 创建并添加统计信息标签
-    QLabel *statsLabel = new QLabel(QString("已学习单词数：%1\n错误单词数：%2").arg(learnedWordsCount).arg(wrongWordsCount), this);
+    QLabel *statsLabel = new QLabel(QString("总单词数：%1\n已学习单词数：%2\n错误单词数：%3\n总分数：%4")
+                                    .arg(totalWords)
+                                    .arg(learnedWordsCount)
+                                    .arg(wrongWordsCount)
+                                    .arg(score), this);
     layout->addWidget(statsLabel);
 
     // 创建导出按钮和返回按钮

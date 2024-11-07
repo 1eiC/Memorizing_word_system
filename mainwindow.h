@@ -35,6 +35,9 @@
 # include <QTimer>
 #include <QCoreApplication>
 # include <QApplication>
+#include <QPalette>
+#include <QPixmap>
+#include <QResizeEvent>
 
 class Statistics;
 
@@ -70,7 +73,11 @@ public: // 公有成员变量
 
 
 private: // 私有成员函数
+
     void showMainMenu(); // 显示单词本管理菜单
+    void addBackgroundImage(); // 显示学习页面
+    void resizeEvent(QResizeEvent *event) override;
+
     void showLearningPage1(); // 显示拼写背诵页面
     void updateWordLabel(const QVector<Word>& words);//随机选择并更新学习页面上显示的单词内容
     void showLearningPage2(); // 显示选择题背诵页面
@@ -119,6 +126,7 @@ private: // 私有成员函数
     QSet<int> usedIndexes; // 记录已出题的单词索引
     QString currentCorrectAnswer;  // 当前题目的正确答案
     int currentIndex; // 当前题目索引
+    int totalScore = 0;  // 用于记录用户的总成绩
 };
 
 #endif // MAINWINDOW_H
