@@ -585,6 +585,12 @@ void MainWindow::showReviewPage() {
     QVBoxLayout *reviewLayout = new QVBoxLayout(reviewPage); // 创建布局
 
     QLabel *reviewLabel = new QLabel("错题复习", this); // 创建标题标签
+    reviewLabel->setStyleSheet("QLabel {"
+                         "    font-size: 30px;"        // 设置字体大小
+                         "    color: #333;"            // 设置文本颜色
+                         "    font-weight: bold;"      // 加粗文本
+                         "    margin-bottom: 15px;"    // 控件底部的间距
+                         "}"); // 设置样式
     reviewLayout->addWidget(reviewLabel); // 添加标题标签
 
     if (wrongWords.isEmpty()) { // 如果没有错题
@@ -593,7 +599,7 @@ void MainWindow::showReviewPage() {
         for (const Word &word : wrongWords) { // 遍历错题
             QString meaningsString = word.getMeanings().join(", "); // 使用逗号分隔多个释义
             QLabel *wordItem = new QLabel(word.getEnglish() + " (" + word.getPartOfSpeech() + ") - " + meaningsString, this); // 创建标签
-            wordLabel->setStyleSheet("QLabel {"
+            wordItem->setStyleSheet("QLabel {"
                          "    font-size: 30px;"        // 设置字体大小
                          "    color: #333;"            // 设置文本颜色
                          "    font-weight: bold;"      // 加粗文本
@@ -698,6 +704,12 @@ void MainWindow::showCardPage() {
             CardPage = new QWidget(this);
             QVBoxLayout *cardLayout = new QVBoxLayout(CardPage);
             infoLabel = new QLabel(this);
+            infoLabel->setStyleSheet("QLabel {"
+                         "    font-size: 30px;"        // 设置字体大小
+                         "    color: #333;"            // 设置文本颜色
+                         "    font-weight: bold;"      // 加粗文本
+                         "    margin-bottom: 15px;"    // 控件底部的间距
+                         "}"); // 设置样式
             CustomButton *checkInButton = new CustomButton("打卡", this);
             CustomButton *returnToMenuButton = new CustomButton("返回主菜单", this); // 返回主菜单按钮
 

@@ -14,12 +14,27 @@ Login::Login(QWidget *parent) : QWidget(parent) {
     // 创建用户名输入框，设置占位符
     usernameInput = new QLineEdit(this);
     usernameInput->setPlaceholderText("用户名");
-    layout->addWidget(usernameInput); // 将用户名输入框添加到布局中
-
     // 创建密码输入框，设置占位符，并将显示模式设置为密码类型
     passwordInput = new QLineEdit(this);
     passwordInput->setPlaceholderText("密码");
     passwordInput->setEchoMode(QLineEdit::Password);
+    QString lineEditStyle = "QLineEdit {"
+                        "    font-size: 16px;"               // 设置字体大小
+                        "    padding: 8px;"                  // 设置内边距，让控件显得更大
+                        "    border: 2px solid #d3d3d3;"     // 设置边框
+                        "    border-radius: 5px;"            // 圆角边框
+                        "    background-color: #f9f9f9;"     // 设置背景颜色
+                        "    color: #333;"                   // 设置文本颜色
+                        "}"
+                        "QLineEdit:focus {"
+                        "    border: 2px solid #4CAF50;"     // 聚焦时改变边框颜色
+                        "}";
+
+    // 应用样式到用户名输入框
+    usernameInput->setStyleSheet(lineEditStyle);
+    // 应用样式到密码输入框
+    passwordInput->setStyleSheet(lineEditStyle);
+    layout->addWidget(usernameInput); // 将用户名输入框添加到布局中
     layout->addWidget(passwordInput); // 将密码输入框添加到布局中
 
     // 创建登录按钮，并将其添加到布局中
