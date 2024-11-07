@@ -3,6 +3,8 @@
 //
 
 #include "register.h"
+
+#include "mainwindow.h"
 #include "user.h"
 
 Register::Register(QWidget *parent) : QWidget(parent) { // 注册界面
@@ -17,9 +19,9 @@ Register::Register(QWidget *parent) : QWidget(parent) { // 注册界面
     passwordInput->setEchoMode(QLineEdit::Password);
     layout->addWidget(passwordInput);
 
-    QPushButton *registerButton = new QPushButton("注册", this);
+    CustomButton *registerButton = new CustomButton("注册", this);
     layout->addWidget(registerButton);
-    connect(registerButton, &QPushButton::clicked, this, &Register::onRegister);
+    connect(registerButton, &CustomButton::clicked, this, &Register::onRegister);
 }
 
 void Register::onRegister() {

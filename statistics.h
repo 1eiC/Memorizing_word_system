@@ -43,8 +43,8 @@ private:
     const Vocabulary &vocabulary; // 单词本
     const QList<Word> &wrongWords; // 错题本
     const QList<Word> &learnedWords; // 已学过的单词
-    QPushButton *exportButton; // 导出按钮
-    QPushButton *backButton; // 返回按钮
+    CustomButton *exportButton; // 导出按钮
+    CustomButton *backButton; // 返回按钮
     QMap<QString, QPair<int, int>> wordStats; // 记录每个单词的出现次数和错误次数
     QMap<QString, QPair<int, int>> wordStat; // 记录每个单词的出现次数和错误次数
     int score;  // 用于记录成绩

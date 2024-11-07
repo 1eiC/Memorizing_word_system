@@ -4,6 +4,8 @@
 
 #include "review.h"
 
+#include "mainwindow.h"
+
 Review::Review(const QList<Word> &wrongWords, QWidget *parent)
     : QWidget(parent), wrongWords(wrongWords) {
     setupUI();
@@ -18,8 +20,8 @@ void Review::setupUI() {
     wrongWordsTable = new QTableWidget(this);
     layout->addWidget(wrongWordsTable);
 
-    redoButton = new QPushButton("重做错题", this);
-    exportButton = new QPushButton("导出错题", this);
+    redoButton = new CustomButton("重做错题", this);
+    exportButton = new CustomButton("导出错题", this);
     layout->addWidget(redoButton);
     layout->addWidget(exportButton);
     loadWrongWords();  // 加载错题数据到表格
@@ -36,12 +38,12 @@ void Review::setupUI() {
         }
     }
 
-    backButton = new QPushButton("返回主菜单", this);
+    backButton = new CustomButton("返回主菜单", this);
     layout->addWidget(backButton);
 
-    connect(backButton, &QPushButton::clicked, this, &Review::onBackButtonClicked);
-    connect(redoButton, &QPushButton::clicked, this, &Review::onRedoButtonClicked);
-    connect(exportButton, &QPushButton::clicked, this, &Review::onExportButtonClicked);
+    connect(backButton, &CustomButton::clicked, this, &Review::onBackButtonClicked);
+    connect(redoButton, &CustomButton::clicked, this, &Review::onRedoButtonClicked);
+    connect(exportButton, &CustomButton::clicked, this, &Review::onExportButtonClicked);
 }
 
 void Review::onBackButtonClicked() {

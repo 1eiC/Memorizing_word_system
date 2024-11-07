@@ -19,6 +19,8 @@
 #include <QTextStream>
 #include <QInputDialog>
 
+class CustomButton;
+
 class Review : public QWidget {
     Q_OBJECT // 必须添加，否则无法使用信号槽
 
@@ -39,11 +41,11 @@ public:
 private:
     void setupUI(); // 设置界面
     QTableWidget *wrongWordsTable;      // 显示错题列表的表格
-    QPushButton *redoButton;            // 重做错题按钮
-    QPushButton *exportButton;          // 导出错题按钮
+    CustomButton *redoButton;            // 重做错题按钮
+    CustomButton *exportButton;          // 导出错题按钮
 
     void loadWrongWords();   // 加载错题数据
-    QPushButton *backButton; // 返回按钮
+    CustomButton *backButton; // 返回按钮
 };
 
 #endif // REVIEW_H
