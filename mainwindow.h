@@ -39,6 +39,29 @@
 #include <QPixmap>
 #include <QResizeEvent>
 
+class CustomButton : public QPushButton {
+public:
+    // 构造函数
+    CustomButton(const QString &text, QWidget *parent = nullptr)
+        : QPushButton(text, parent) {
+        // 在这里设置按钮样式表
+        setStyleSheet("QPushButton {"
+    "    background-color: #4CAF50;"    // 绿色背景
+    "    color: white;"                 // 白色文本
+    "    border: 2px solid #4CAF50;"    // 边框与背景相同
+    "    border-radius: 10px;"          // 圆角半径
+    "    font-size: 16px;"              // 字体大小
+    "    padding: 10px;"                // 内边距
+    "}"
+    "QPushButton:hover {"
+    "    background-color: #45a049;"    // 鼠标悬停时颜色变化
+    "}"
+    "QPushButton:pressed {"
+    "    background-color: #3e8e41;"    // 按下时颜色变化
+    "}");
+    }
+};
+
 class Statistics;
 
 class MainWindow : public QMainWindow {
@@ -47,6 +70,7 @@ class MainWindow : public QMainWindow {
 public: // 公有成员变量
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
+
 
     private slots: // 槽函数
         void onLoginSuccessful(); // 登录成功的槽函数

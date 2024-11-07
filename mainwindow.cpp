@@ -58,14 +58,15 @@ void MainWindow::showMainMenu() {
     // 主菜单页面布局
     QWidget *mainMenu = new QWidget(this);
     QVBoxLayout *menuLayout = new QVBoxLayout(mainMenu);
-    QPushButton *preview = new QPushButton("预览", this);
-    QPushButton *learnButton1 = new QPushButton("拼写背诵", this);
-    QPushButton *learnButton2 = new QPushButton("选择题背诵", this);
-    QPushButton *reviewButton = new QPushButton("复习错题", this);
-    QPushButton *statisticsButton = new QPushButton("统计分析", this);
-    QPushButton *cardButton = new QPushButton("打卡", this);
-    QPushButton *importButton = new QPushButton("导入单词表",this);
-    QPushButton *logoutButton = new QPushButton("退出", this);
+    CustomButton *preview = new CustomButton("预览", this);
+    CustomButton *learnButton1 = new CustomButton("拼写背诵", this);
+    CustomButton *learnButton2 = new CustomButton("选择题背诵", this);
+    CustomButton *reviewButton = new CustomButton("复习错题", this);
+    CustomButton *statisticsButton = new CustomButton("统计分析", this);
+    CustomButton *cardButton = new CustomButton("打卡", this);
+    CustomButton *importButton = new CustomButton("导入单词表",this);
+    CustomButton *logoutButton = new CustomButton("退出", this);
+
     // 添加按钮
     menuLayout->addWidget(preview);
     menuLayout->addWidget(learnButton1);
@@ -81,14 +82,14 @@ void MainWindow::showMainMenu() {
     addBackgroundImage(); // 添加背景图片
     setCentralWidget(mainMenu); // 显示主菜单
 
-    connect(preview, &QPushButton::clicked, this, &MainWindow::previewVocabulary);
-    connect(learnButton1, &QPushButton::clicked, this, &MainWindow::startLearning1);
-    connect(learnButton2, &QPushButton::clicked, this, &MainWindow::startLearning2);
-    connect(reviewButton, &QPushButton::clicked, this, &MainWindow::startReview);
-    connect(statisticsButton, &QPushButton::clicked, this, &MainWindow::performStatistics);
-    connect(importButton, &QPushButton::clicked, this, &MainWindow::import);
-    connect(cardButton, &QPushButton::clicked, this, &MainWindow::onCardButtonClicked);
-    connect(logoutButton, &QPushButton::clicked, this, [this]() {
+    connect(preview, &CustomButton::clicked, this, &MainWindow::previewVocabulary);
+    connect(learnButton1, &CustomButton::clicked, this, &MainWindow::startLearning1);
+    connect(learnButton2, &CustomButton::clicked, this, &MainWindow::startLearning2);
+    connect(reviewButton, &CustomButton::clicked, this, &MainWindow::startReview);
+    connect(statisticsButton, &CustomButton::clicked, this, &MainWindow::performStatistics);
+    connect(importButton, &CustomButton::clicked, this, &MainWindow::import);
+    connect(cardButton, &CustomButton::clicked, this, &MainWindow::onCardButtonClicked);
+    connect(logoutButton, &CustomButton::clicked, this, [this]() {
         QApplication::quit(); // 退出程序
     });
 }
@@ -169,10 +170,10 @@ void MainWindow::previewVocabulary() {
     }
 
     // 创建操作按钮：添加、修改、删除单词及返回主菜单
-    QPushButton *addButton = new QPushButton("添加单词", this);
-    QPushButton *modifyButton = new QPushButton("修改单词", this);
-    QPushButton *deleteButton = new QPushButton("删除单词", this);
-    QPushButton *backButton = new QPushButton("返回主菜单", this);
+    CustomButton *addButton = new CustomButton("添加单词", this);
+    CustomButton *modifyButton = new CustomButton("修改单词", this);
+    CustomButton *deleteButton = new CustomButton("删除单词", this);
+    CustomButton *backButton = new CustomButton("返回主菜单", this);
 
     // 将词汇表和按钮添加到布局中
     vocabularyLayout->addWidget(vocabularyTable);
@@ -186,10 +187,10 @@ void MainWindow::previewVocabulary() {
     setCentralWidget(vocabularyPage);
 
     // 连接按钮点击信号到对应的槽函数
-    connect(addButton, &QPushButton::clicked, this, &MainWindow::addWord);
-    connect(modifyButton, &QPushButton::clicked, this, &MainWindow::modifyWord);
-    connect(deleteButton, &QPushButton::clicked, this, &MainWindow::deleteWord);
-    connect(backButton, &QPushButton::clicked, this, &MainWindow::showMainMenu);
+    connect(addButton, &CustomButton::clicked, this, &MainWindow::addWord);
+    connect(modifyButton, &CustomButton::clicked, this, &MainWindow::modifyWord);
+    connect(deleteButton, &CustomButton::clicked, this, &MainWindow::deleteWord);
+    connect(backButton, &CustomButton::clicked, this, &MainWindow::showMainMenu);
 }
 
 
@@ -279,8 +280,8 @@ void MainWindow::showLearningPage1() {
 
     wordLabel = new QLabel(this);
     inputField = new QLineEdit(this);
-    submitButton = new QPushButton("提交", this);
-    QPushButton *returnToMenuButton = new QPushButton("返回主菜单", this); // 返回主菜单按钮
+    submitButton = new CustomButton("提交", this);
+    CustomButton *returnToMenuButton = new CustomButton("返回主菜单", this); // 返回主菜单按钮
     learningLayout->addWidget(wordLabel);
     learningLayout->addWidget(inputField);
     learningLayout->addWidget(submitButton);
@@ -304,8 +305,8 @@ void MainWindow::showLearningPage1() {
     }
 
     // 连接信号和槽
-    connect(returnToMenuButton, &QPushButton::clicked, this, &MainWindow::showMainMenu);
-    connect(submitButton, &QPushButton::clicked, this, [this]() {
+    connect(returnToMenuButton, &CustomButton::clicked, this, &MainWindow::showMainMenu);
+    connect(submitButton, &CustomButton::clicked, this, [this]() {
         QString userInput = inputField->text().trimmed();
         const Word& currentWord = selectedWords[currentIndex];
 
@@ -378,7 +379,7 @@ void MainWindow::showLearningPage2() {
     QVBoxLayout *learningLayout = new QVBoxLayout(learningPage2);
 
     wordLabel = new QLabel(this);
-    submitButton = new QPushButton("提交", this);
+    submitButton = new CustomButton("提交", this);
 
     // 生成四个选项按钮
     optionsGroup = new QButtonGroup(this);
@@ -386,7 +387,7 @@ void MainWindow::showLearningPage2() {
     QRadioButton *optionB = new QRadioButton(this);
     QRadioButton *optionC = new QRadioButton(this);
     QRadioButton *optionD = new QRadioButton(this);
-    QPushButton *returnToMenuButton = new QPushButton("返回主菜单", this); // 返回主菜单按钮
+    CustomButton *returnToMenuButton = new CustomButton("返回主菜单", this); // 返回主菜单按钮
     optionsGroup->addButton(optionA, 0);
     optionsGroup->addButton(optionB, 1);
     optionsGroup->addButton(optionC, 2);
@@ -429,8 +430,8 @@ void MainWindow::showLearningPage2() {
     }
 
     // 连接信号和槽
-    connect(returnToMenuButton, &QPushButton::clicked, this, &MainWindow::showMainMenu);
-    connect(submitButton, &QPushButton::clicked, this, [this]() {
+    connect(returnToMenuButton, &CustomButton::clicked, this, &MainWindow::showMainMenu);
+    connect(submitButton, &CustomButton::clicked, this, [this]() {
         checkMultipleChoiceAnswer(optionsGroup); // 检查答案
     });
 }
@@ -556,9 +557,9 @@ void MainWindow::showReviewPage() {
         }
     }
 
-    QPushButton *exportButton = new QPushButton("导出错题", this);
-    QPushButton *redoButton = new QPushButton("重新做错题", this);
-    QPushButton *backButton = new QPushButton("返回主菜单", this); // 返回按钮
+    CustomButton *exportButton = new CustomButton("导出错题", this);
+    CustomButton *redoButton = new CustomButton("重新做错题", this);
+    CustomButton *backButton = new CustomButton("返回主菜单", this); // 返回按钮
     reviewLayout->addWidget(exportButton); // 添加导出按钮
     reviewLayout->addWidget(redoButton); // 添加重新做错题按钮
     reviewLayout->addWidget(backButton); // 添加返回按钮
@@ -566,9 +567,9 @@ void MainWindow::showReviewPage() {
     reviewPage->setLayout(reviewLayout); // 设置布局
     setCentralWidget(reviewPage); // 显示页面
 
-    connect(backButton, &QPushButton::clicked, this, &MainWindow::showMainMenu); // 返回主菜单
-    connect(exportButton, &QPushButton::clicked, this, &MainWindow::onExportWrongWords);
-    connect(redoButton, &QPushButton::clicked, this, &MainWindow::onRedoWrongWords);
+    connect(backButton, &CustomButton::clicked, this, &MainWindow::showMainMenu); // 返回主菜单
+    connect(exportButton, &CustomButton::clicked, this, &MainWindow::onExportWrongWords);
+    connect(redoButton, &CustomButton::clicked, this, &MainWindow::onRedoWrongWords);
 }
 
 
@@ -593,9 +594,9 @@ void MainWindow::ImportPage() {
     QWidget *importPage = new QWidget(this);
     QVBoxLayout *importLayout = new QVBoxLayout(importPage);
 
-    QPushButton *selectFileButton = new QPushButton("选择单词表文件", this);
+    CustomButton *selectFileButton = new CustomButton("选择单词表文件", this);
     QLabel *fileContentLabel = new QLabel("请选择一个文件来导入单词表。", this);
-    QPushButton *backButton = new QPushButton("返回主菜单", this);
+    CustomButton *backButton = new CustomButton("返回主菜单", this);
 
     importLayout->addWidget(selectFileButton);
     importLayout->addWidget(fileContentLabel);
@@ -604,7 +605,7 @@ void MainWindow::ImportPage() {
     importPage->setLayout(importLayout);
     setCentralWidget(importPage); // 设置导入页面为当前中心窗口
 
-    connect(selectFileButton, &QPushButton::clicked, this, [this, fileContentLabel]() {
+    connect(selectFileButton, &CustomButton::clicked, this, [this, fileContentLabel]() {
         QString fileName = QFileDialog::getOpenFileName(this, "选择单词表文件", "", "文本文件 (*.txt)");
         if (!fileName.isEmpty()) {
             QFile file(fileName);
@@ -636,7 +637,7 @@ void MainWindow::ImportPage() {
         }
     });
 
-    connect(backButton, &QPushButton::clicked, this, &MainWindow::showMainMenu); // 返回主菜单
+    connect(backButton, &CustomButton::clicked, this, &MainWindow::showMainMenu); // 返回主菜单
 }
 
 void MainWindow::showCardPage() {
@@ -645,8 +646,8 @@ void MainWindow::showCardPage() {
             CardPage = new QWidget(this);
             QVBoxLayout *cardLayout = new QVBoxLayout(CardPage);
             infoLabel = new QLabel(this);
-            QPushButton *checkInButton = new QPushButton("打卡", this);
-            QPushButton *returnToMenuButton = new QPushButton("返回主菜单", this); // 返回主菜单按钮
+            CustomButton *checkInButton = new CustomButton("打卡", this);
+            CustomButton *returnToMenuButton = new CustomButton("返回主菜单", this); // 返回主菜单按钮
 
             // 将控件添加到布局中
             cardLayout->addWidget(infoLabel);
@@ -657,8 +658,8 @@ void MainWindow::showCardPage() {
             CardPage->setLayout(cardLayout);
 
             // 连接按钮的点击信号到槽函数
-            connect(checkInButton, &QPushButton::clicked, this, &MainWindow::onCheckInButtonClicked);
-            connect(returnToMenuButton, &QPushButton::clicked, this, &MainWindow::onReturnToMainMenuClicked);
+            connect(checkInButton, &CustomButton::clicked, this, &MainWindow::onCheckInButtonClicked);
+            connect(returnToMenuButton, &CustomButton::clicked, this, &MainWindow::onReturnToMainMenuClicked);
         }
 
         // 加载打卡数据到recentCheckins列表
@@ -771,4 +772,3 @@ void MainWindow::updateCheckinDisplay(){
     infoLabel->setText(displayText);
 }
 //打卡
-
