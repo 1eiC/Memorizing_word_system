@@ -16,6 +16,7 @@
 #include <QFile>
 #include  <QFileDialog>
 #include  <QDebug>
+#include "mainwindow.h"
 
 
 class Statistics : public QWidget {

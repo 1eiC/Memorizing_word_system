@@ -3,6 +3,8 @@
 //
 
 #include "login.h"
+
+#include "mainwindow.h"
 #include "user.h"
 
 // Login 类构造函数，初始化登录界面
@@ -21,14 +23,14 @@ Login::Login(QWidget *parent) : QWidget(parent) {
     layout->addWidget(passwordInput); // 将密码输入框添加到布局中
 
     // 创建登录按钮，并将其添加到布局中
-    QPushButton *loginButton = new QPushButton("登录", this);
+    CustomButton *loginButton = new CustomButton("登录", this);
     layout->addWidget(loginButton);
-    connect(loginButton, &QPushButton::clicked, this, &Login::onLogin); // 连接登录按钮的点击信号到 onLogin 槽函数
+    connect(loginButton, &CustomButton::clicked, this, &Login::onLogin); // 连接登录按钮的点击信号到 onLogin 槽函数
 
     // 创建注册按钮，并将其添加到布局中
-    QPushButton *registerButton = new QPushButton("注册", this);
+    CustomButton *registerButton = new CustomButton("注册", this);
     layout->addWidget(registerButton);
-    connect(registerButton, &QPushButton::clicked, this, &Login::onRegister); // 连接注册按钮的点击信号到 onRegister 槽函数
+    connect(registerButton, &CustomButton::clicked, this, &Login::onRegister); // 连接注册按钮的点击信号到 onRegister 槽函数
 }
 
 // 登录按钮的槽函数

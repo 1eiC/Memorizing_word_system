@@ -51,7 +51,7 @@ public:
     "    border: 2px solid #4CAF50;"    // 边框与背景相同
     "    border-radius: 10px;"          // 圆角半径
     "    font-size: 16px;"              // 字体大小
-    "    padding: 10px;"                // 内边距
+    "    padding: 15px;"                // 内边距
     "}"
     "QPushButton:hover {"
     "    background-color: #45a049;"    // 鼠标悬停时颜色变化

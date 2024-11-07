@@ -36,16 +36,16 @@ void Statistics::setupUI() {
     layout->addWidget(statsLabel);
 
     // 创建导出按钮和返回按钮
-    exportButton = new QPushButton("导出统计数据", this);
-    backButton = new QPushButton("返回主菜单", this);
+    exportButton = new CustomButton("导出统计数据", this);
+    backButton = new CustomButton("返回主菜单", this);
 
     // 将按钮添加到布局中
     layout->addWidget(exportButton);
     layout->addWidget(backButton);
 
     // 连接按钮点击事件到对应的槽函数
-    connect(exportButton, &QPushButton::clicked, this, &Statistics::onExportButtonClicked);
-    connect(backButton, &QPushButton::clicked, this, &Statistics::onBackButtonClicked);
+    connect(exportButton, &CustomButton::clicked, this, &Statistics::onExportButtonClicked);
+    connect(backButton, &CustomButton::clicked, this, &Statistics::onBackButtonClicked);
 }
 
 

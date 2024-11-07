@@ -11,6 +11,8 @@
 #include <QVBoxLayout>
 #include <QMessageBox>
 
+class CustomButton;
+
 class Login : public QWidget {
     Q_OBJECT
 
