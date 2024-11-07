@@ -44,8 +44,14 @@ void MainWindow::MainMenu() {
 void MainWindow::onUsernameReceived(const QString &username)
 {
     this->username = username; // 更新MainWindow中的username变量
-    // 可以在这里根据需要调用使用username的函数，比如初始化或加载数据
+    // 计算距离上次打卡的天数
+    QDate currentDate = QDate::currentDate();
     loadCheckinData();
+    qDebug() << "上次打卡日期：" << lastCheckInDate.toString(Qt::ISODate);
+    int daysSinceLastCheckIn = lastCheckInDate.isValid() ? lastCheckInDate.daysTo(currentDate) : 0;
+    qDebug() << "距离上次打卡的天数：" << daysSinceLastCheckIn;
+    // 显示提示框
+    QMessageBox::information(this, "打卡提示", QString("您已经 %1 天没有打卡了！").arg(daysSinceLastCheckIn));
 }
 
 void MainWindow::showMainMenu() {
@@ -642,36 +648,41 @@ void MainWindow::onReturnToMainMenuClicked() {
     showMainMenu();
 }
 
-void MainWindow::loadCheckinData() {// 加载打卡数据
-    QString filePath = getUserFilePath();// 获取用户文件路径
+void MainWindow::loadCheckinData() {
+    QString filePath = getUserFilePath();
 
-    QFile file(filePath);// 创建文件对象
+    QFile file(filePath);
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
-        return;
+        return; // 如果文件无法打开，直接返回
     }
 
-    QTextStream in(&file);// 创建文本流对象
-
+    QTextStream in(&file);
 
     bool ok;
-    checkinCount = in.readLine().toInt(&ok);
-    if (ok) {
-        lastCheckInDate = QDate::fromString(in.readLine(), Qt::ISODate);
+    QString checkinCountStr = in.readLine(); // 读取打卡次数
+    checkinCount = checkinCountStr.toInt(&ok);
+    if (!ok) {
+        checkinCount = 0; // 如果读取失败，设置为 0
     }
 
-    // 清空现有记录，准备重新加载
+    QString lastCheckInDateStr = in.readLine(); // 读取上次打卡日期
+    lastCheckInDate = QDate::fromString(lastCheckInDateStr, Qt::ISODate);
+    if (!lastCheckInDate.isValid()) {
+        lastCheckInDate = QDate(); // 如果日期无效，重置为空
+    }
+
+    // 清空现有的打卡记录
     recentCheckins.clear();
 
     // 读取历史打卡记录
     while (!in.atEnd()) {
-        QString dateString = in.readLine();// 读取日期字符串
-        if (!dateString.isEmpty()) {// 检查日期字符串是否为空
-            QDate checkinDate = QDate::fromString(dateString, Qt::ISODate);
-            if (checkinDate.isValid()) {
-                recentCheckins.append(checkinDate);
-            }
+        QString dateString = in.readLine();
+        QDate checkinDate = QDate::fromString(dateString, Qt::ISODate);
+        if (checkinDate.isValid()) {
+            recentCheckins.append(checkinDate);
         }
     }
+
     file.close();
 }
 void MainWindow::saveCheckinData(const QDate &date)
@@ -712,3 +723,4 @@ void MainWindow::updateCheckinDisplay(){
     infoLabel->setText(displayText);
 }
 //打卡
+
