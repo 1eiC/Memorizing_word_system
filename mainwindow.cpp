@@ -41,7 +41,7 @@ void MainWindow::MainMenu() {
     showMainMenu(); //显示单词本管理菜单
 }
 
-void MainWindow::onUsernameReceived(const QString &username)
+void MainWindow::onUsernameReceived(const QString &username) // 接收用户名
 {
     this->username = username; // 更新MainWindow中的username变量
     // 计算距离上次打卡的天数
@@ -116,44 +116,63 @@ void MainWindow::onCardButtonClicked() {
 }
 
 
+/**
+ * @brief 预览词汇功能
+ *
+ * 本函数创建并显示词汇预览页面，包括词汇表和操作按钮。通过以下步骤实现：
+ * 1. 创建词汇页面和布局
+ * 2. 初始化词汇表，设置列数和表头
+ * 3. 获取词汇数据并填充到词汇表中
+ * 4. 创建操作按钮：添加、修改、删除单词及返回主菜单
+ * 5. 将词汇表和按钮添加到布局中
+ * 6. 设置中央部件为词汇页面
+ * 7. 连接按钮点击信号到对应的槽函数
+ */
 void MainWindow::previewVocabulary() {
-
+    // 创建词汇页面和布局
     vocabularyPage = new QWidget(this);
     QVBoxLayout *vocabularyLayout = new QVBoxLayout(vocabularyPage);
+
+    // 初始化词汇表，设置列数和表头
     vocabularyTable = new QTableWidget(this);
     vocabularyTable->setColumnCount(3);
     QStringList headers;
     headers << "单词" << "词性" << "释义";
     vocabularyTable->setHorizontalHeaderLabels(headers);
 
+    // 获取词汇数据并填充到词汇表中
     const QVector<Word> &words = vocabulary.getWords();
     vocabularyTable->setRowCount(words.size());
-
     for (int i = 0; i < words.size(); ++i) {
         vocabularyTable->setItem(i, 0, new QTableWidgetItem(words[i].getEnglish()));
         vocabularyTable->setItem(i, 1, new QTableWidgetItem(words[i].getPartOfSpeech()));
         vocabularyTable->setItem(i, 2, new QTableWidgetItem(words[i].getMeanings().join("; ")));
     }
 
+    // 创建操作按钮：添加、修改、删除单词及返回主菜单
     QPushButton *addButton = new QPushButton("添加单词", this);
     QPushButton *modifyButton = new QPushButton("修改单词", this);
     QPushButton *deleteButton = new QPushButton("删除单词", this);
     QPushButton *backButton = new QPushButton("返回主菜单", this);
 
+    // 将词汇表和按钮添加到布局中
     vocabularyLayout->addWidget(vocabularyTable);
     vocabularyLayout->addWidget(addButton);
     vocabularyLayout->addWidget(modifyButton);
     vocabularyLayout->addWidget(deleteButton);
     vocabularyLayout->addWidget(backButton);
 
+    // 设置中央部件为词汇页面
     vocabularyPage->setLayout(vocabularyLayout);
     setCentralWidget(vocabularyPage);
 
+    // 连接按钮点击信号到对应的槽函数
     connect(addButton, &QPushButton::clicked, this, &MainWindow::addWord);
     connect(modifyButton, &QPushButton::clicked, this, &MainWindow::modifyWord);
     connect(deleteButton, &QPushButton::clicked, this, &MainWindow::deleteWord);
     connect(backButton, &QPushButton::clicked, this, &MainWindow::showMainMenu);
 }
+
 
 void MainWindow::addWord() {
     // 添加单词逻辑
@@ -242,10 +261,11 @@ void MainWindow::showLearningPage1() {
     wordLabel = new QLabel(this);
     inputField = new QLineEdit(this);
     submitButton = new QPushButton("提交", this);
-
+    QPushButton *returnToMenuButton = new QPushButton("返回主菜单", this); // 返回主菜单按钮
     learningLayout->addWidget(wordLabel);
     learningLayout->addWidget(inputField);
     learningLayout->addWidget(submitButton);
+    learningLayout->addWidget(returnToMenuButton);
 
     learningPage1->setLayout(learningLayout);
     setCentralWidget(learningPage1);
@@ -265,6 +285,7 @@ void MainWindow::showLearningPage1() {
     }
 
     // 连接信号和槽
+    connect(returnToMenuButton, &QPushButton::clicked, this, &MainWindow::showMainMenu);
     connect(submitButton, &QPushButton::clicked, this, [this]() {
         QString userInput = inputField->text().trimmed();
         const Word& currentWord = selectedWords[currentIndex];
@@ -344,6 +365,7 @@ void MainWindow::showLearningPage2() {
     QRadioButton *optionB = new QRadioButton(this);
     QRadioButton *optionC = new QRadioButton(this);
     QRadioButton *optionD = new QRadioButton(this);
+    QPushButton *returnToMenuButton = new QPushButton("返回主菜单", this); // 返回主菜单按钮
     optionsGroup->addButton(optionA, 0);
     optionsGroup->addButton(optionB, 1);
     optionsGroup->addButton(optionC, 2);
@@ -356,6 +378,7 @@ void MainWindow::showLearningPage2() {
     learningLayout->addWidget(optionC);
     learningLayout->addWidget(optionD);
     learningLayout->addWidget(submitButton);
+    learningLayout->addWidget(returnToMenuButton);
 
     learningPage2->setLayout(learningLayout);
     setCentralWidget(learningPage2);
@@ -385,6 +408,7 @@ void MainWindow::showLearningPage2() {
     }
 
     // 连接信号和槽
+    connect(returnToMenuButton, &QPushButton::clicked, this, &MainWindow::showMainMenu);
     connect(submitButton, &QPushButton::clicked, this, [this]() {
         checkMultipleChoiceAnswer(optionsGroup); // 检查答案
     });
@@ -492,7 +516,7 @@ void MainWindow::checkMultipleChoiceAnswer(QButtonGroup *optionsGroup) {
 }
 
 void MainWindow::showReviewPage() {
-    review = new Review(wrongWords,this);
+    review = new Review(wrongWords, this);
     reviewPage = new QWidget(this); // 创建复习页面
     QVBoxLayout *reviewLayout = new QVBoxLayout(reviewPage); // 创建布局
 
@@ -500,15 +524,15 @@ void MainWindow::showReviewPage() {
     reviewLayout->addWidget(reviewLabel); // 添加标题标签
 
     if (wrongWords.isEmpty()) { // 如果没有错题
-        reviewLabel->setText("没有错题，继续保持！");// 设置提示
-    }
-    else {
-        for (const Word &word : wrongWords) {
-            QString meaningsString = word.getMeanings().join(", ");
-            QLabel *wordItem = new QLabel(word.getEnglish() + " (" + word.getPartOfSpeech() + ") - " + meaningsString, this);
-            reviewLayout->addWidget(wordItem);
+        reviewLabel->setText("没有错题，继续保持！"); // 设置提示
+    } else {
+        for (const Word &word : wrongWords) { // 遍历错题
+            QString meaningsString = word.getMeanings().join(", "); // 使用逗号分隔多个释义
+            QLabel *wordItem = new QLabel(word.getEnglish() + " (" + word.getPartOfSpeech() + ") - " + meaningsString, this); // 创建标签
+            reviewLayout->addWidget(wordItem); // 添加标签
         }
     }
+
     QPushButton *exportButton = new QPushButton("导出错题", this);
     QPushButton *redoButton = new QPushButton("重新做错题", this);
     QPushButton *backButton = new QPushButton("返回主菜单", this); // 返回按钮
@@ -523,6 +547,7 @@ void MainWindow::showReviewPage() {
     connect(exportButton, &QPushButton::clicked, this, &MainWindow::onExportWrongWords);
     connect(redoButton, &QPushButton::clicked, this, &MainWindow::onRedoWrongWords);
 }
+
 
 void MainWindow::onExportWrongWords() {
     review -> onExportButtonClicked(); // 导出错题

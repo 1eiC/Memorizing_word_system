@@ -14,7 +14,7 @@ agriculture,noun,农业,农学
 alternative,adjective,替代的,备选的
 ambition,noun,雄心,抱负
 analyze,verb,分析,剖析
-apparent,adjective,明显的,显而易见的
+apparent,adjective,易懂的
 appropriate,adjective,适当的,合适的
 assemble,verb,集合,装配
 assess,verb,评估,评价
@@ -241,4 +241,3 @@ vital,adjective,至关重要的,必不可少的
 withdraw,verb,撤回,取回
 witness,verb,目击,见证
 yield,verb,产生,屈服
-
