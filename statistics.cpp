@@ -53,7 +53,7 @@ void Statistics::onExportButtonClicked() {
 
     // 创建文件对象
     QFile file(fileName);
-    if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
+    if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) { // 以只写文本模式打开文件
         QMessageBox::warning(this, "错误", "无法创建文件，请检查文件路径和权限。", QMessageBox::Ok);
         return;
     }
@@ -87,7 +87,7 @@ void Statistics::onExportButtonClicked() {
     emit exportStatistics();
 }
 
-void Statistics::onBackButtonClicked() {
+void Statistics::onBackButtonClicked() { // 返回按钮槽函数
     emit backToMainMenu(); // 发射返回主菜单信号
 
 }

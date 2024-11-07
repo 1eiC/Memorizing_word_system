@@ -53,31 +53,31 @@ void Review::loadWrongWords() {
     //wrongWords.clear();  // 清空现有数据
     QFile file("wrong_words.txt");  // 存储错题数据的文件名为 wrong_words.txt
 
-    if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
-        QMessageBox::warning(this, "加载错题失败", "无法打开文件：wrong_words.txt");
+    if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) { // 以只读文本模式打开文件
+        QMessageBox::warning(this, "加载错题失败", "无法打开文件：wrong_words.txt"); // 弹出警告对话框
         return; // 如果文件无法打开，直接返回
     }
 
-    QTextStream in(&file);
-    while (!in.atEnd()) {
-        QString line = in.readLine();
-        QStringList parts = line.split(",");
+    QTextStream in(&file); // 创建文本流对象
+    while (!in.atEnd()) { // 循环读取文件内容
+        QString line = in.readLine(); // 读取一行
+        QStringList parts = line.split(","); // 以逗号分割
 
-        if (parts.size() < 3) {
+        if (parts.size() < 3) { // 至少包含英文、词性和一个释义
             // 如果格式错误，继续处理下一行
-            continue;
+            continue; // 跳过当前循环
         }
 
-        QString english = parts[0].trimmed();
-        QString partOfSpeech = parts[1].trimmed();
-        QStringList meanings;
+        QString english = parts[0].trimmed(); // 去除首尾空格
+        QString partOfSpeech = parts[1].trimmed(); // 去除首尾空格
+        QStringList meanings; // 创建释义列表
 
         // 从第三个字段开始都是释义
-        for (int i = 2; i < parts.size(); ++i) {
-            meanings.append(parts[i].trimmed());
+        for (int i = 2; i < parts.size(); ++i) { // 遍历释义
+            meanings.append(parts[i].trimmed()); // 去除首尾空格
         }
 
-        wrongWords.append(Word(english, partOfSpeech, meanings));
+        wrongWords.append(Word(english, partOfSpeech, meanings)); // 添加单词
     }
 
     file.close();
@@ -102,46 +102,47 @@ QList<Word> Review::getWrongWords() const { // 返回所有错题
 void Review::onRedoButtonClicked() {
     // 复习错题逻辑
     for (int i = 0; i < wrongWords.size(); ++i) {
-        const Word &word = wrongWords[i];
-        bool ok;
-        QString userInput = QInputDialog::getText(this, "重做错题", "请输入 " + word.getEnglish() + " 的释义:", QLineEdit::Normal, "", &ok);
-        if (!ok) {
-            return;
+        const Word &word = wrongWords[i]; // 获取当前错题单词
+        bool ok; // 用于判断用户是否输入了内容
+        QString userInput = QInputDialog::getText(this, "重做错题", "请输入 " + word.getEnglish() + " 的释义:", QLineEdit::Normal, "", &ok); // 弹出输入对话框
+        if (!ok) { // 用户取消输入
+            return; // 用户取消输入，退出函数
         }
-        if (word.getMeanings().contains(userInput.trimmed())) {
-            QMessageBox::information(this, "正确", "回答正确！");
-            wrongWords.removeAt(i);
+        if (word.getMeanings().contains(userInput.trimmed())) { // 判断用户输入是否正确
+            QMessageBox::information(this, "正确", "回答正确！"); // 弹出提示框
+            wrongWords.removeAt(i); // 移除答对的单词
             --i;  // 调整索引以考虑移除的元素
         } else {
-            QMessageBox::warning(this, "错误", "回答错误，请再试一次。");
+            QMessageBox::warning(this, "错误", "回答错误，请再试一次。"); // 弹出提示框
         }
     }
 
-    QMessageBox::information(this, "完成", "已完成所有错题的重做。");
+    QMessageBox::information(this, "完成", "已完成所有错题的重做。"); // 弹出提示框
     loadWrongWords(); // 更新显示
 }
 
-void Review::onExportButtonClicked() {
+
+void Review::onExportButtonClicked() { // 导出错题
     qDebug() << "导出时错题数量:" << wrongWords.size(); // 调试输出
-    if (wrongWords.isEmpty()) {
+    if (wrongWords.isEmpty()) { // 如果没有错题
         QMessageBox::information(this, "没有错题", "没有错题可供导出。");
         return;
     }
 
-    QString fileName = QFileDialog::getSaveFileName(this, "导出错题", "", "文本文件 (*.txt);;所有文件 (*)");
-    if (fileName.isEmpty()) {
+    QString fileName = QFileDialog::getSaveFileName(this, "导出错题", "", "文本文件 (*.txt);;所有文件 (*)"); // 弹出文件保存对话框
+    if (fileName.isEmpty()) { // 如果用户取消操作
         return;
     }
 
     QFile file(fileName); // 创建文件对象
-    if (file.open(QIODevice::WriteOnly | QIODevice::Text)) {
+    if (file.open(QIODevice::WriteOnly | QIODevice::Text)) { // 以只写文本模式打开文件
         QTextStream out(&file);
         for (const Word &word : wrongWords) { // 遍历所有单词
-            out << word.getEnglish() << "," << word.getPartOfSpeech() << "," << word.getMeanings().join(", ") << "\n";
+            out << word.getEnglish() << "," << word.getPartOfSpeech() << "," << word.getMeanings().join(", ") << "\n"; // 输出单词信息
         } // 输出单词信息
-        file.close();
-        QMessageBox::information(this, "导出成功", "错题已成功导出。");
-    } else {
-        QMessageBox::warning(this, "导出失败", "无法打开文件进行写入。");
+        file.close();   // 关闭文件
+        QMessageBox::information(this, "导出成功", "错题已成功导出。"); // 弹出提示框
+    } else { // 如果无法打开文件
+        QMessageBox::warning(this, "导出失败", "无法打开文件进行写入。"); // 弹出警告对话框
     }
 }

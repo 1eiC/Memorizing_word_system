@@ -22,7 +22,7 @@ public:
     int size() const; // 获取单词本的大小
 
     void loadDefaultWords(const QString &filename); // 加载默认的单词表
-    void saveToFile(const QString &filename);
+    void saveToFile(const QString &filename); // 保存单词表到文件
 private:
     QVector<Word> words; // 存储单词的列表
 };
