@@ -19,7 +19,7 @@ public:
     static bool userExists(const QString &username); // 检查用户是否已存在
     static bool authenticate(const QString &username, const QString &password);
     static void loadUserDatabase();//从文件加载用户数据
-    static void saveUserDatabase();
+    static void saveUserDatabase(); // 保存用户数据到文件
 
 private:
     QString username; // 用户名

@@ -10,7 +10,7 @@
 
 class Vocabulary {
 public:
-    Vocabulary();
+    Vocabulary(); // 构造函数
 
     void addWord(const Word &word); // 添加新单词
     const QVector<Word>& getWords() const; // 获取单词列表

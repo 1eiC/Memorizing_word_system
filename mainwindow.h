@@ -39,11 +39,12 @@
 #include <QPixmap>
 #include <QResizeEvent>
 
-class CustomButton : public QPushButton {
+class CustomButton : public QPushButton { // 自定义按钮类
+    Q_OBJECT
 public:
     // 构造函数
     CustomButton(const QString &text, QWidget *parent = nullptr)
-        : QPushButton(text, parent) {
+        : QPushButton(text, parent) { // 调用父类构造函数
         // 在这里设置按钮样式表
         setStyleSheet("QPushButton {"
     "    background-color: #4CAF50;"    // 绿色背景
@@ -53,10 +54,10 @@ public:
     "    font-size: 16px;"              // 字体大小
     "    padding: 15px;"                // 内边距
     "}"
-    "QPushButton:hover {"
+    "QPushButton:hover {"               // 鼠标悬停样式
     "    background-color: #45a049;"    // 鼠标悬停时颜色变化
     "}"
-    "QPushButton:pressed {"
+    "QPushButton:pressed {"             // 按下样式
     "    background-color: #3e8e41;"    // 按下时颜色变化
     "}");
     }
@@ -76,7 +77,7 @@ public: // 公有成员变量
         void onLoginSuccessful(); // 登录成功的槽函数
         void onSwitchToRegister(); // 切换到注册页面
         void onRegisterSuccessful(); // 注册成功的槽函数
-        void MainMenu();
+        void MainMenu(); // 主菜单
         void startLearning1(); // 开始拼写背诵
         void startLearning2(); // 开始选择题背诵
         void startReview(); // 开始复习错题
@@ -90,18 +91,17 @@ public: // 公有成员变量
         void onExportWrongWords(); // 导出错题
         void onRedoWrongWords(); // 重新做错题
         void onCardButtonClicked();//开始打卡
-        void onCheckInButtonClicked();
+        void onCheckInButtonClicked(); // 打卡按钮点击
         void showCardPage();            // 显示打卡页面
-        void onReturnToMainMenuClicked();
-        void onUsernameReceived(const QString &username);
+        void onReturnToMainMenuClicked(); // 返回主菜单
+        void onUsernameReceived(const QString &username); // 接收用户名
 
 
 private: // 私有成员函数
 
     void showMainMenu(); // 显示单词本管理菜单
     void addBackgroundImage(); // 显示学习页面
-    void resizeEvent(QResizeEvent *event) override;
-
+    void resizeEvent(QResizeEvent *event) override; // 重写 resizeEvent 函数
     void showLearningPage1(); // 显示拼写背诵页面
     void updateWordLabel(const QVector<Word>& words);//随机选择并更新学习页面上显示的单词内容
     void showLearningPage2(); // 显示选择题背诵页面

@@ -24,7 +24,7 @@ class Statistics : public QWidget {
 
 public:
     explicit Statistics(const Vocabulary &vocabulary, const QList<Word> &wrongWords, const QList<Word> &learnedWords,
-                        const QMap<QString, QPair<int, int>> &wordStats, int score, QWidget *parent = nullptr);
+                        const QMap<QString, QPair<int, int>> &wordStats, int score, QWidget *parent = nullptr); // 构造函数
 
     signals:
         void backToMainMenu(); // 返回主菜单信号

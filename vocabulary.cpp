@@ -101,7 +101,7 @@ void Vocabulary::loadDefaultWords(const QString &filename) { // 加载默认单�
         }
         file.close(); // 关闭文件
     } else {
-        qDebug() << "无法打开文件：" << filename;
+        qDebug() << "无法打开文件：" << filename; // 输出错误信息
     }
 }
 

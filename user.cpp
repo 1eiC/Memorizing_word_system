@@ -38,22 +38,22 @@ bool User::userExists(const QString &username) {
 }
 
 bool User::authenticate(const QString &username, const QString &password) {
-    loadUserDatabase();
+    loadUserDatabase(); // 加载用户数据
     return userDatabase.contains(username) && userDatabase[username] == password; // 检查用户名和密码是否匹配
 }
 
 // 从文件加载用户数据
 void User::loadUserDatabase() {
-    QFile file(userDatabaseFile);
-    if (file.open(QIODevice::ReadOnly | QIODevice::Text)) {
-        QTextStream in(&file);
-        while (!in.atEnd()) {
-            QString line = in.readLine();
-            QStringList parts = line.split(':');
-            if (parts.size() == 2) {
-                QString username = parts[0].trimmed();
-                QString password = parts[1].trimmed();
-                userDatabase[username] = password;
+    QFile file(userDatabaseFile); // 创建文件对象
+    if (file.open(QIODevice::ReadOnly | QIODevice::Text)) { // 以只读文本模式打开文件
+        QTextStream in(&file); // 创建文本流对象
+        while (!in.atEnd()) { // 逐行读取文件内容
+            QString line = in.readLine(); // 读取一行
+            QStringList parts = line.split(':'); // 以冒号分割
+            if (parts.size() == 2) { // 至少包含用户名和密码
+                QString username = parts[0].trimmed(); // 去除首尾空格
+                QString password = parts[1].trimmed(); // 去除首尾空格
+                userDatabase[username] = password; // 保存到用户数据库
             }
         }
         file.close();
@@ -62,12 +62,12 @@ void User::loadUserDatabase() {
 
 // 将用户数据保存到文件
 void User::saveUserDatabase() {
-    QFile file(userDatabaseFile);
-    if (file.open(QIODevice::WriteOnly | QIODevice::Text)) {
+    QFile file(userDatabaseFile); // 创建文件对象
+    if (file.open(QIODevice::WriteOnly | QIODevice::Text)) { // 以只写文本模式打开文件
         QTextStream out(&file);
-        for (auto it = userDatabase.begin(); it != userDatabase.end(); ++it) {
-            out << it.key() << ":" << it.value() << "\n";
+        for (auto it = userDatabase.begin(); it != userDatabase.end(); ++it) { // 遍历用户数据库
+            out << it.key() << ":" << it.value() << "\n"; // 写入用户名和密码
         }
-        file.close();
+        file.close(); // 关闭文件
     }
 }

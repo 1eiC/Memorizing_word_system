@@ -14,7 +14,7 @@ class Register : public QWidget {
     Q_OBJECT
 
 public:
-    Register(QWidget *parent = nullptr);
+    Register(QWidget *parent = nullptr); // 构造函数
 
     signals:
         void registerSuccessful(); // 注册成功信号
