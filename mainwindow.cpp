@@ -78,7 +78,7 @@ void MainWindow::showMainMenu() {
     menuLayout->addWidget(logoutButton);
     menuLayout->setSpacing(70);  // 控件之间的间距
     menuLayout->setContentsMargins(200, 160, 200, 160);  // 界面四周的边距
-    mainMenu->setLayout(menuLayout);
+    mainMenu->setLayout(menuLayout); // 设置布局
     addBackgroundImage(); // 添加背景图片
     setCentralWidget(mainMenu); // 显示主菜单
 
@@ -95,19 +95,19 @@ void MainWindow::showMainMenu() {
 }
 
 void MainWindow::addBackgroundImage() {
-    QPalette palette = this->palette();
-    QPixmap pixmap("./OIP.png");
+    QPalette palette = this->palette(); // 获取当前窗口的调色板
+    QPixmap pixmap("./OIP.png"); // 加载背景图片
 
     // 确保图片被拉伸到整个窗口大小
-    pixmap = pixmap.scaled(this->size(), Qt::KeepAspectRatioByExpanding, Qt::SmoothTransformation);
+    pixmap = pixmap.scaled(this->size(), Qt::KeepAspectRatioByExpanding, Qt::SmoothTransformation); // 按比例拉伸图片
 
-    palette.setBrush(QPalette::Window, QBrush(pixmap));
-    this->setPalette(palette);
+    palette.setBrush(QPalette::Window, QBrush(pixmap)); // 设置背景图片
+    this->setPalette(palette); // 设置调色板
 }
 
-void MainWindow::resizeEvent(QResizeEvent *event) {
-    addBackgroundImage();
-    QMainWindow::resizeEvent(event);
+void MainWindow::resizeEvent(QResizeEvent *event) { // 窗口大小改变事件
+    addBackgroundImage(); // 窗口大小改变时，重新设置背景图片
+    QMainWindow::resizeEvent(event); // 调用基类的 resizeEvent 函数
 }
 
 
@@ -829,10 +829,11 @@ QString MainWindow::getUserFilePath() const// 获取用户文件路径
 }
 
 void MainWindow::updateCheckinDisplay(){
-    QString displayText = QString("当前打卡天数：%1\n上次打卡日期：%2")
+    QString displayText = QString("当前打卡天数：%1\n上次打卡日期：%2") // 显示打卡信息
                               .arg(checkinCount)
                               .arg(lastCheckInDate.isValid() ? lastCheckInDate.toString(Qt::ISODate) : "无");
 
     infoLabel->setText(displayText);
 }
 //打卡
+
