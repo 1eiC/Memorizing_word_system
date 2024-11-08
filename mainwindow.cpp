@@ -163,43 +163,43 @@ void MainWindow::previewVocabulary() {
     CustomButton *backButton = new CustomButton("返回主菜单", this);
 
     // 将词汇表和按钮添加到布局中
-    vocabularyLayout->addWidget(vocabularyTable);
-    vocabularyLayout->addWidget(addButton);
-    vocabularyLayout->addWidget(modifyButton);
-    vocabularyLayout->addWidget(deleteButton);
-    vocabularyLayout->addWidget(backButton);
+    vocabularyLayout->addWidget(vocabularyTable); // 添加词汇表
+    vocabularyLayout->addWidget(addButton); // 添加按钮
+    vocabularyLayout->addWidget(modifyButton); // 修改按钮
+    vocabularyLayout->addWidget(deleteButton); // 删除按钮
+    vocabularyLayout->addWidget(backButton);    // 返回按钮
 
     // 设置中央部件为词汇页面
-    vocabularyPage->setLayout(vocabularyLayout);
-    setCentralWidget(vocabularyPage);
+    vocabularyPage->setLayout(vocabularyLayout); // 设置布局
+    setCentralWidget(vocabularyPage); // 显示词汇页面
 
     // 连接按钮点击信号到对应的槽函数
-    connect(addButton, &CustomButton::clicked, this, &MainWindow::addWord);
-    connect(modifyButton, &CustomButton::clicked, this, &MainWindow::modifyWord);
-    connect(deleteButton, &CustomButton::clicked, this, &MainWindow::deleteWord);
-    connect(backButton, &CustomButton::clicked, this, &MainWindow::showMainMenu);
+    connect(addButton, &CustomButton::clicked, this, &MainWindow::addWord); // 添加单词
+    connect(modifyButton, &CustomButton::clicked, this, &MainWindow::modifyWord); // 修改单词
+    connect(deleteButton, &CustomButton::clicked, this, &MainWindow::deleteWord); // 删除单词
+    connect(backButton, &CustomButton::clicked, this, &MainWindow::showMainMenu); // 返回主菜单
 }
 
 
 void MainWindow::addWord() {
     // 添加单词逻辑
-    QString english = QInputDialog::getText(this, "添加单词", "请输入单词：");
+    QString english = QInputDialog::getText(this, "添加单词", "请输入单词："); // 获取用户输入的英文单词
     if (english.isEmpty()) {
         return; // 用户取消输入
     }
 
-    QString partOfSpeech = QInputDialog::getText(this, "添加词性", "请输入词性：");
+    QString partOfSpeech = QInputDialog::getText(this, "添加词性", "请输入词性："); // 获取用户输入的词性
     if (partOfSpeech.isEmpty()) {
         return; // 用户取消输入
     }
 
-    QString meaningsStr = QInputDialog::getText(this, "添加释义", "请输入释义（多个释义用逗号分隔）：");
+    QString meaningsStr = QInputDialog::getText(this, "添加释义", "请输入释义（多个释义用逗号分隔）："); // 获取用户输入的释义
     if (meaningsStr.isEmpty()) {
         return; // 用户取消输入
     }
     QStringList meanings = meaningsStr.split(",", Qt::SkipEmptyParts); // 获取释义列表
 
-    vocabulary.addWord(Word(english, partOfSpeech, meanings));
+    vocabulary.addWord(Word(english, partOfSpeech, meanings)); // 添加单词
     updateVocabularyFile();
     previewVocabulary(); // 更新预览
 }
@@ -209,13 +209,13 @@ void MainWindow::modifyWord() {
     int currentRow = vocabularyTable->currentRow(); // 获取当前选中的行
     if (currentRow >= 0) {
         QString english = vocabularyTable->item(currentRow, 0)->text(); // 获取当前行的英文单词
-        QString newPartOfSpeech = QInputDialog::getText(this, "修改词性", "请输入新的词性：");
-        if (newPartOfSpeech.isEmpty()) {
-            return;
+        QString newPartOfSpeech = QInputDialog::getText(this, "修改词性", "请输入新的词性："); // 获取新的词性
+        if (newPartOfSpeech.isEmpty()) { // 用户取消输入
+            return; // 用户取消输入
         }
 
-        QString newMeaningsStr = QInputDialog::getText(this, "修改释义", "请输入新的释义（多个释义用逗号分隔）：");
-        if (newMeaningsStr.isEmpty()) {
+        QString newMeaningsStr = QInputDialog::getText(this, "修改释义", "请输入新的释义（多个释义用逗号分隔）："); // 获取新的释义
+        if (newMeaningsStr.isEmpty()) { // 用户取消输入
             return;
         }
         QStringList newMeanings = newMeaningsStr.split(",", Qt::SkipEmptyParts); // 获取释义列表
@@ -244,7 +244,7 @@ void MainWindow::supplementMeaning() {
     int currentRow = vocabularyTable->currentRow(); // 获取当前选中的行
     if (currentRow >= 0) {
         QString english = vocabularyTable->item(currentRow, 0)->text(); // 获取当前行的英文单词
-        QString newMeaning = QInputDialog::getText(this, "补充释义", "请输入新的释义：");
+        QString newMeaning = QInputDialog::getText(this, "补充释义", "请输入新的释义："); // 获取新的释义
         if (!newMeaning.isEmpty()) {
             vocabulary.addMeaningToWord(english, newMeaning); // 添加释义
             updateVocabularyFile(); // 保存到
@@ -262,17 +262,17 @@ void MainWindow::updateVocabularyFile() {
 
 
 void MainWindow::showLearningPage1() {
-    learningPage1 = new QWidget(this);
+    learningPage1 = new QWidget(this); // 创建学习页面
     QVBoxLayout *learningLayout = new QVBoxLayout(learningPage1);
 
-    wordLabel = new QLabel(this);
+    wordLabel = new QLabel(this); // 创建单词标签
     wordLabel->setStyleSheet("QLabel {"
                              "    font-size: 30px;"       // 字体大小
                              "    font-weight: bold;"     // 字体加粗
                              "    color: #333;"           // 文本颜色
                              "}");
 
-    inputField = new QLineEdit(this);
+    inputField = new QLineEdit(this); // 创建输入框
     inputField->setPlaceholderText("请输入你的答案...");
     inputField->setStyleSheet("QLineEdit {"
                               "    font-size: 16px;"       // 字体大小
@@ -644,59 +644,76 @@ void MainWindow::showStatisticsPage() {
 void MainWindow::ImportPage() {
     // 创建导入单词表页面
     QWidget *importPage = new QWidget(this);
+    // 创建垂直布局管理器
     QVBoxLayout *importLayout = new QVBoxLayout(importPage);
 
+    // 创建选择文件按钮
     CustomButton *selectFileButton = new CustomButton("选择单词表文件", this);
+    // 创建显示文件内容的标签
     QLabel *fileContentLabel = new QLabel("请选择一个文件来导入单词表。", this);
+    // 设置标签样式
     fileContentLabel->setStyleSheet("QLabel {"
                          "    font-size: 30px;"        // 设置字体大小
                          "    color: #333;"            // 设置文本颜色
                          "    font-weight: bold;"      // 加粗文本
                          "    margin-bottom: 15px;"    // 控件底部的间距
                          "}"); // 设置样式
+    // 创建返回主菜单按钮
     CustomButton *backButton = new CustomButton("返回主菜单", this);
 
+    // 将控件添加到布局中
     importLayout->addWidget(selectFileButton);
     importLayout->addWidget(fileContentLabel);
     importLayout->addWidget(backButton);
 
+    // 设置布局并将其设为中央窗口
     importPage->setLayout(importLayout);
     setCentralWidget(importPage); // 设置导入页面为当前中心窗口
 
+    // 连接选择文件按钮的点击事件到槽函数
     connect(selectFileButton, &CustomButton::clicked, this, [this, fileContentLabel]() {
+        // 打开文件对话框选择文件
         QString fileName = QFileDialog::getOpenFileName(this, "选择单词表文件", "", "文本文件 (*.txt)");
         if (!fileName.isEmpty()) {
+            // 尝试打开文件
             QFile file(fileName);
             if (file.open(QIODevice::ReadOnly | QIODevice::Text)) {
-                QTextStream in(&file);
+                // 读取文件内容
+                QTextStream in(&file); // 使用文本流读取文件
                 in.setCodec("UTF-8"); // 确保使用 UTF-8 编码读取文件
-                QString content;
-                while (!in.atEnd()) {
-                    QString line = in.readLine();
-                    QStringList parts = line.split(",");
-                    if (parts.size() >= 3) {
-                        QString english = parts[0].trimmed();
-                        QString partOfSpeech = parts[1].trimmed();
-                        QStringList meanings;
-                        for (int i = 2; i < parts.size(); ++i) {
-                            meanings.append(parts[i].trimmed());
+                QString content; // 保存文件内容
+                while (!in.atEnd()) { // 逐行读取文件内容
+                    QString line = in.readLine(); // 读取一行
+                    QStringList parts = line.split(","); // 使用逗号分隔单词的各个部分
+                    if (parts.size() >= 3) { // 至少需要三个部分：单词、词性、释义
+                        QString english = parts[0].trimmed(); // 去除单词两端的空白字符
+                        QString partOfSpeech = parts[1].trimmed(); // 去除词性两端的空白字符
+                        QStringList meanings; // 释义列表
+                        for (int i = 2; i < parts.size(); ++i) {    // 从第三个部分开始是释义
+                            meanings.append(parts[i].trimmed()); // 去除释义两端的空白字符
                         }
+                        // 将单词添加到词汇表中
                         vocabulary.addWord(Word(english, partOfSpeech, meanings));
-                        content += line + "\n";
+                        content += line + "\n"; // 添加到显示的内容中
                     } else {
-                        content += "无效的单词格式: " + line + "\n";
+                        // 处理无效的单词格式
+                        content += "无效的单词格式: " + line + "\n"; // 添加到显示的内容中
                     }
                 }
+                // 更新标签显示文件内容
                 fileContentLabel->setText(content);
-                file.close();
+                file.close(); // 关闭文件
             } else {
+                // 处理文件打开失败的情况
                 QMessageBox::warning(this, "文件错误", "无法打开所选文件！");
             }
         }
     });
 
+    // 连接返回主菜单按钮的点击事件到显示主菜单的槽函数
     connect(backButton, &CustomButton::clicked, this, &MainWindow::showMainMenu); // 返回主菜单
 }
+
 
 void MainWindow::showCardPage() {
     try {
@@ -734,12 +751,12 @@ void MainWindow::showCardPage() {
         // 将 CardPage 设置为主窗口的中央部件
         setCentralWidget(CardPage);
     } catch (const std::bad_alloc& e) {
-        QMessageBox::critical(this, "内存分配错误", "无法分配足够的内存来创建界面！");
+        QMessageBox::critical(this, "内存分配错误", "无法分配足够的内存来创建界面！"); // 内存分配错误
     }
 }
 
 void MainWindow::onCheckInButtonClicked() {
-    QDate currentDate = QDate::currentDate();
+    QDate currentDate = QDate::currentDate(); // 获取当前日期
 
     // 判断是否已打卡
     if (lastCheckInDate == currentDate) {
@@ -748,10 +765,10 @@ void MainWindow::onCheckInButtonClicked() {
     }
 
     // 更新打卡数据
-    lastCheckInDate = currentDate;
-    checkinCount++;
-    saveCheckinData(currentDate);
-    updateCheckinDisplay();
+    lastCheckInDate = currentDate; // 更新上次打卡日期
+    checkinCount++; // 打卡次数加一
+    saveCheckinData(currentDate); // 保存打卡数据
+    updateCheckinDisplay(); // 更新显示的打卡信息
 
     QMessageBox::information(this, "打卡成功", "打卡成功！");
 }
@@ -761,26 +778,26 @@ void MainWindow::onReturnToMainMenuClicked() {
     showMainMenu();
 }
 
-void MainWindow::loadCheckinData() {
-    QString filePath = getUserFilePath();
+void MainWindow::loadCheckinData() { // 加载打卡数据
+    QString filePath = getUserFilePath(); // 获取用户文件路径
 
     QFile file(filePath);
-    if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+    if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) { // 以只读文本模式打开文件
         return; // 如果文件无法打开，直接返回
     }
 
-    QTextStream in(&file);
+    QTextStream in(&file); // 使用文本流读取文件
 
     bool ok;
     QString checkinCountStr = in.readLine(); // 读取打卡次数
-    checkinCount = checkinCountStr.toInt(&ok);
+    checkinCount = checkinCountStr.toInt(&ok); // 转换为整数
     if (!ok) {
         checkinCount = 0; // 如果读取失败，设置为 0
     }
 
     QString lastCheckInDateStr = in.readLine(); // 读取上次打卡日期
-    lastCheckInDate = QDate::fromString(lastCheckInDateStr, Qt::ISODate);
-    if (!lastCheckInDate.isValid()) {
+    lastCheckInDate = QDate::fromString(lastCheckInDateStr, Qt::ISODate); // 转换为日期
+    if (!lastCheckInDate.isValid()) { // 如果日期无效
         lastCheckInDate = QDate(); // 如果日期无效，重置为空
     }
 
@@ -788,11 +805,11 @@ void MainWindow::loadCheckinData() {
     recentCheckins.clear();
 
     // 读取历史打卡记录
-    while (!in.atEnd()) {
-        QString dateString = in.readLine();
-        QDate checkinDate = QDate::fromString(dateString, Qt::ISODate);
-        if (checkinDate.isValid()) {
-            recentCheckins.append(checkinDate);
+    while (!in.atEnd()) { // 逐行读取
+        QString dateString = in.readLine(); // 读取日期字符串
+        QDate checkinDate = QDate::fromString(dateString, Qt::ISODate); // 转换为日期
+        if (checkinDate.isValid()) { // 如果日期有效
+            recentCheckins.append(checkinDate); // 添加到列表
         }
     }
 
@@ -800,32 +817,32 @@ void MainWindow::loadCheckinData() {
 }
 void MainWindow::saveCheckinData(const QDate &date)
 {
-    QString filePath = getUserFilePath();
+    QString filePath = getUserFilePath(); // 获取用户文件路径
 
-    QFile file(filePath);
-    if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
-        QMessageBox::critical(this, "错误", "无法保存打卡数据！");
+    QFile file(filePath); // 创建文件对象
+    if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) { // 以只写文本模式打开文件
+        QMessageBox::critical(this, "错误", "无法保存打卡数据！"); // 保存失败
         return;
     }
 
     QTextStream out(&file);
-    out << checkinCount << "\n";
-    out << lastCheckInDate.toString(Qt::ISODate) << "\n";
-    out << date.toString(Qt::ISODate) << "\n";
+    out << checkinCount << "\n"; // 写入打卡次数
+    out << lastCheckInDate.toString(Qt::ISODate) << "\n"; // 写入上次打卡日期
+    out << date.toString(Qt::ISODate) << "\n"; // 写入本次打卡日期
 
-    for (const QDate &checkin : recentCheckins) {
-        out << checkin.toString(Qt::ISODate) << "\n";
+    for (const QDate &checkin : recentCheckins) { // 遍历历史打卡记录
+        out << checkin.toString(Qt::ISODate) << "\n"; // 写入历史打卡日期
     }
     file.close();
 }
 
 QString MainWindow::getUserFilePath() const// 获取用户文件路径
 {
-    QString dataDir = QCoreApplication::applicationDirPath() + "/checkin_data/";
+    QString dataDir = QCoreApplication::applicationDirPath() + "/checkin_data/"; // 数据目录
     QDir dir(dataDir);// 创建目录对象
     if (!dir.exists())
         dir.mkpath(dataDir);// 创建数据目录
-    return dataDir + username + ".txt";
+    return dataDir + username + ".txt"; // 返回用户文件路径
 }
 
 void MainWindow::updateCheckinDisplay(){
@@ -833,7 +850,7 @@ void MainWindow::updateCheckinDisplay(){
                               .arg(checkinCount)
                               .arg(lastCheckInDate.isValid() ? lastCheckInDate.toString(Qt::ISODate) : "无");
 
-    infoLabel->setText(displayText);
+    infoLabel->setText(displayText); // 更新显示的打卡信息
 }
 //打卡
 

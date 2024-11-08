@@ -71,7 +71,7 @@ void Statistics::onExportButtonClicked() {
     // 创建文件对象
     QFile file(fileName);
     if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) { // 以只写文本模式打开文件
-        QMessageBox::warning(this, "错误", "无法创建文件，请检查文件路径和权限。", QMessageBox::Ok);
+        QMessageBox::warning(this, "错误", "无法创建文件，请检查文件路径和权限。", QMessageBox::Ok); // 弹出警告对话框
         return;
     }
     // 调试输出：检查 wordStats 的大小
@@ -82,16 +82,16 @@ void Statistics::onExportButtonClicked() {
     out << "Statistics\n";
     out << "-------------------\n";
 
-    for (auto it = wordStats.constBegin(); it != wordStats.constEnd(); ++it) {
+    for (auto it = wordStats.constBegin(); it != wordStats.constEnd(); ++it) { // 遍历所有单词
         QString word = it.key();
         int attempts = it.value().first;  // 出现次数
         int errors = it.value().second;   // 错误次数
 
-        out << "Word: " << word << "\n";
-        out << "Number_of_occurrences: " << attempts << "\n";
-        out << "Number_of_errors: " << errors << "\n";
-        out << "Correctness: " << ((attempts > 0) ? (1.0 - static_cast<double>(errors) / attempts) * 100 : 100) << "%\n";
-        out << "-------------------\n";
+        out << "Word: " << word << "\n"; // 输出单词
+        out << "Number_of_occurrences: " << attempts << "\n"; // 输出出现次数
+        out << "Number_of_errors: " << errors << "\n"; // 输出错误次数
+        out << "Correctness: " << ((attempts > 0) ? (1.0 - static_cast<double>(errors) / attempts) * 100 : 100) << "%\n"; // 输出正确率
+        out << "-------------------\n";     // 分隔符
     }
 
     // 完成写入，关闭文件
